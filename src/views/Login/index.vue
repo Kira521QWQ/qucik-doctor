@@ -10,4 +10,10 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+h2 {
+  color: var(--cp-orange);
+  background-color: red;
+  width: 125px;
+}
+</style>

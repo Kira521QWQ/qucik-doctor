@@ -2,7 +2,7 @@
 <template>
   <van-nav-bar left-arrow title="登录" right-text="注册" />
 </template>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 :deep() {
   .van-nav-bar {
     &__arrow {

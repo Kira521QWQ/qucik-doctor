@@ -5,6 +5,7 @@
 
 <template>
   <div>
+    <CpNavBar />
     <h2>自动导入配置完毕</h2>
     <VanButton type="primary">按钮</VanButton>
   </div>

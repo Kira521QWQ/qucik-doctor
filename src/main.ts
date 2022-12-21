@@ -9,6 +9,9 @@ import 'vant/lib/index.css';
 // 导入项目样式，要在组件库之后
 import './styles/main.scss';
 
+// 导入打包的 svg 图片
+import 'virtual:svg-icons-register';
+
 const app = createApp(App);
 
 app.use(createPinia());

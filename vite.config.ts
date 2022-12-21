@@ -6,6 +6,9 @@ import vue from '@vitejs/plugin-vue';
 // 导入自动配置组件,需要的包
 import Components from 'unplugin-vue-components/vite';
 import { VantResolver } from 'unplugin-vue-components/resolvers';
+// 打包icon的插件
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +24,10 @@ export default defineConfig({
       // importStyle: false 配置参数说明：
       // Toast Confirm 这类组件的样式还是需要单独引入，样式全局引入了这里关闭自动引入
       resolvers: [VantResolver({ importStyle: false })],
+    }),
+    createSvgIconsPlugin({
+      // 指定图标文件夹，绝对路径（node 代码）
+      iconDirs: [path.resolve(process.cwd(), 'src/icons')],
     }),
   ],
   resolve: {

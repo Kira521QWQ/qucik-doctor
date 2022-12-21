@@ -46,6 +46,12 @@ const onClickRight = () => {
         <img src="@/assets/qq.svg" alt="qq-icon" />
       </div>
     </div>
+    <svg>
+      <use href="#icon-login-eye-off" />
+    </svg>
+    <svg>
+      <use href="#icon-home-docs" />
+    </svg>
   </div>
 </template>
 

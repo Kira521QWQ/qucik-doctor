@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 // 导入保存用户信息的store
 import { useUserStore } from '@/stores/user';
-import { instance } from '@/utils/request';
+// import { instance } from '@/utils/request';
+import { loginByPassword } from '@/services/user';
 import { Toast } from 'vant';
 
 // 创建userStore
@@ -43,13 +44,14 @@ const login = async (formValues: { mobile: string; password: string }) => {
   if (!isAgree.value) return Toast('请勾选已同意');
 
   // 发起登录网络请求
-  const res = await instance.post('/login/password', {
-    mobile: formValues.mobile,
-    password: formValues.password,
-  });
-  console.log('res', res);
+  const user = await loginByPassword(formValues.mobile, formValues.password);
   // 登录成功之后保存用户登录信息到store中
-  userStore.setUser(res.data.data);
+  userStore.setUser(user);
+  // const res = await instance.post('/login/password', {
+  //   mobile: formValues.mobile,
+  //   password: formValues.password,
+  // });
+  // console.log('res', res);
 };
 </script>
 

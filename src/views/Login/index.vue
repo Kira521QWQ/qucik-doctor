@@ -1,7 +1,26 @@
 <script setup lang="ts">
+import {} from 'vant';
+import { ref } from 'vue';
+
 // 父组件绑定子组件暴露的事件处理函数
 const onClickRight = () => {
   console.log('右侧点击，父组件执行的事件处理函数');
+};
+
+// 搜集页面数据（定义数据容器）：手机号和密码
+const mobile = ref('');
+const password = ref('');
+// 页面状态数据
+const isAgree = ref(false);
+const isShowPwd = ref(false);
+const isPwdLogin = ref(true);
+
+// 登录事件处理
+const login = () => {
+  console.log(mobile.value);
+  console.log(password.value);
+  console.log('同意', isAgree.value);
+  console.log('密码可见', isShowPwd.value);
 };
 </script>
 
@@ -20,14 +39,21 @@ const onClickRight = () => {
     <!-- 登录表单 -->
     <div class="login-form">
       <van-form autocomplete="off">
-        <van-field placeholder="请输入手机号" type="tel"></van-field>
-        <van-field placeholder="请输入密码" type="password">
+        <van-field placeholder="请输入手机号" v-model="mobile" type="tel"></van-field>
+        <van-field
+          placeholder="请输入密码"
+          v-model="password"
+          :type="isShowPwd ? 'text' : 'password'"
+        >
           <template #button>
-            <CpIcon name="login-eye-off" />
+            <CpIcon
+              :name="isShowPwd ? 'login-eye-on' : 'login-eye-off'"
+              @click="isShowPwd = !isShowPwd"
+            />
           </template>
         </van-field>
         <div class="cp-cell">
-          <van-checkbox>
+          <van-checkbox v-model="isAgree">
             <span>我已同意</span>
             <a href="javascript:;">用户协议</a>
             <span>及</span>
@@ -35,7 +61,7 @@ const onClickRight = () => {
           </van-checkbox>
         </div>
         <div class="cp-cell">
-          <van-button block round type="primary">登 录</van-button>
+          <van-button block round type="primary" @click="login">登 录</van-button>
         </div>
         <div class="cp-cell">
           <a href="javascript:;">忘记密码？</a>

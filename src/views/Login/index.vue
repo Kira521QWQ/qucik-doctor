@@ -21,7 +21,11 @@ const onClickRight = () => {
     <div class="login-form">
       <van-form autocomplete="off">
         <van-field placeholder="请输入手机号" type="tel"></van-field>
-        <van-field placeholder="请输入密码" type="password"></van-field>
+        <van-field placeholder="请输入密码" type="password">
+          <template #button>
+            <CpIcon name="login-eye-off" />
+          </template>
+        </van-field>
         <div class="cp-cell">
           <van-checkbox>
             <span>我已同意</span>
@@ -46,12 +50,6 @@ const onClickRight = () => {
         <img src="@/assets/qq.svg" alt="qq-icon" />
       </div>
     </div>
-    <svg>
-      <use href="#icon-login-eye-off" />
-    </svg>
-    <svg>
-      <use href="#icon-home-docs" />
-    </svg>
   </div>
 </template>
 

@@ -1,17 +1,71 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// 导入 vue-router 的组合式 api: useRouter 函数
+import { useRouter } from 'vue-router';
+
+// 获取路由实例
+const router = useRouter();
+
+// 封装数据
+defineProps<{
+  title?: string;
+  rightText?: string;
+}>();
+
+// 封装事件，把导航栏右侧按钮的点击事件暴露给父组件
+const emits = defineEmits<{
+  (e: 'click-right'): void;
+}>();
+// 右侧点击事件处理函数
+const onClickRight = () => {
+  console.log('子组件内部执行');
+  // 调用父组件绑定的函数
+  emits('click-right');
+};
+
+// 左侧箭头的事件处理函数
+const onClickLeft = () => {
+  console.log('左侧箭头点击');
+  // 返回上一层路由
+  router.back();
+};
+</script>
 <template>
-  <van-nav-bar left-arrow title="登录" right-text="注册" />
+  <van-nav-bar
+    left-arrow
+    :title="title"
+    :right-text="rightText"
+    @click-left="onClickLeft"
+    @click-right="onClickRight"
+  />
 </template>
 <style lang="scss" scoped>
 :deep() {
-  .van-nav-bar {
-    &__arrow {
-      font-size: 18px;
-      color: var(--cp-text1);
-    }
-    &__text {
-      font-size: 15px;
-    }
+  // .van-nav-bar {
+  //   &__arrow {
+  //     font-size: 18px;
+  //     color: var(--cp-text1);
+  //   }
+  //   &__text {
+  //     font-size: 15px;
+  //   }
+  // }
+  // 上面最终等价生效的css写法如下
+  .van-nav-bar__arrow {
+    font-size: 18px;
+    color: var(--cp-text1);
   }
+  .van-nav-bar__text {
+    font-size: 15px;
+  }
+
+  // 注意点
+  // 如果是在 deep 里修改原来组件的样式，只能写一个类名，下面这中写法无效的
+  //   .van-nav-bar .van-icon {
+  //   color: red;
+  // }
+  // 这个写法是有效的
+  // .van-icon {
+  //   color: red;
+  // }
 }
 </style>

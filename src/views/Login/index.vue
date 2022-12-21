@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {} from 'vant';
+import { Toast } from 'vant';
 import { ref } from 'vue';
 
 // 父组件绑定子组件暴露的事件处理函数
@@ -15,12 +15,25 @@ const isAgree = ref(false);
 const isShowPwd = ref(false);
 const isPwdLogin = ref(true);
 
+// 配置表单校验，对象数组
+const mobileRules = [
+  { required: true, message: '请输入手机号' },
+  { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' },
+];
+
+const passwordRules = [
+  { required: true, message: '请输入密码' },
+  { pattern: /^\w{8,24}$/, message: '密码需8-24个字符' },
+];
+
 // 登录事件处理
-const login = () => {
+const login = (formValues: { mobile: string; password: string }) => {
+  console.log('formValues', formValues);
   console.log(mobile.value);
   console.log(password.value);
   console.log('同意', isAgree.value);
   console.log('密码可见', isShowPwd.value);
+  if (!isAgree.value) return Toast('请勾选已同意');
 };
 </script>
 
@@ -38,11 +51,19 @@ const login = () => {
     </div>
     <!-- 登录表单 -->
     <div class="login-form">
-      <van-form autocomplete="off">
-        <van-field placeholder="请输入手机号" v-model="mobile" type="tel"></van-field>
+      <van-form autocomplete="off" @submit="login">
+        <van-field
+          placeholder="请输入手机号"
+          v-model="mobile"
+          name="mobile"
+          :rules="mobileRules"
+          type="tel"
+        ></van-field>
         <van-field
           placeholder="请输入密码"
           v-model="password"
+          name="password"
+          :rules="passwordRules"
           :type="isShowPwd ? 'text' : 'password'"
         >
           <template #button>
@@ -61,7 +82,7 @@ const login = () => {
           </van-checkbox>
         </div>
         <div class="cp-cell">
-          <van-button block round type="primary" @click="login">登 录</van-button>
+          <van-button block round type="primary" native-type="submit">登 录</van-button>
         </div>
         <div class="cp-cell">
           <a href="javascript:;">忘记密码？</a>

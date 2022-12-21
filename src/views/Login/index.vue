@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+// 导入保存用户信息的store
+import { useUserStore } from '@/stores/user';
 import { instance } from '@/utils/request';
 import { Toast } from 'vant';
+
+// 创建userStore
+const userStore = useUserStore();
 
 // 父组件绑定子组件暴露的事件处理函数
 const onClickRight = () => {
   console.log('右侧点击，父组件执行的事件处理函数');
+  userStore.delUser();
 };
 
 // 搜集页面数据（定义数据容器）：手机号和密码
@@ -42,6 +48,8 @@ const login = async (formValues: { mobile: string; password: string }) => {
     password: formValues.password,
   });
   console.log('res', res);
+  // 登录成功之后保存用户登录信息到store中
+  userStore.setUser(res.data.data);
 };
 </script>
 

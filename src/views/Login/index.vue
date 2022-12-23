@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 // 导入保存用户信息的store
 import { useUserStore } from '@/stores/user';
 // 业务网络请求
 import { loginByPassword } from '@/services/user';
-import { Toast } from 'vant';
+import { Toast, type FormInstance } from 'vant';
 
 // 创建userStore
 const userStore = useUserStore();
@@ -23,8 +23,14 @@ const isAgree = ref(false);
 const isShowPwd = ref(false);
 // 登录方式的条件
 const isPwdLogin = ref(true);
+// vant form 实例变量
+const form = ref<FormInstance>();
 // 验证码
 const smsCode = ref('');
+// 倒计时页面响应式数据
+const counter = ref(0);
+// 倒计时的timerId
+let timerId: number;
 
 // 配置表单校验，对象数组
 const mobileRules = [
@@ -50,6 +56,60 @@ const login = async (formValues: { mobile: string; password: string }) => {
   // 登录成功之后保存用户登录信息到store中
   userStore.setUser(user);
 };
+// 发送验证码的事件处理函数
+const sendSms = () => {
+  console.log('对手机号合法性验证开始');
+  // 1、promise 异常的 async 的try catch 处理方式
+  // try {
+  //   // 手动执行表单指定的验证
+  //   await form.value?.validate('mobile');
+  //   // 如果 promise 有异常，是不会走下一步的
+  //   console.log('手机号没有问题');
+  // } catch (error) {
+  //   console.log('手机号有问题', error);
+  // }
+
+  // 2、.catch 处理方式
+  // 手动执行表单指定的验证
+  // form.value
+  //   ?.validate('mobile')
+  //   .then((succ) => {
+  //     console.log('验证通过', succ);
+  //   })
+  //   .catch((error) => {
+  //     console.log('手机号有问题', error);
+  //   });
+  // 3、.then 的第二个参数就是异常处理
+  form.value?.validate('mobile').then(
+    (resolve) => {
+      console.log('验证通过resolve', resolve);
+      // 如果当前计时中，则返回
+      if (counter.value > 0) return;
+
+      // 显示倒计时,每隔1秒修改一下counter.value
+      counter.value = 10;
+      // 使用计时器的良好习惯，开启之前先clear。
+      window.clearInterval(timerId);
+      timerId = window.setInterval(() => {
+        // counter.value -= 1
+        // 和上面等价
+        counter.value = counter.value - 1;
+        if (counter.value <= 0) {
+          // 清空计时器
+          window.clearInterval(timerId);
+        }
+      }, 1000);
+    },
+    (reject) => {
+      console.log('手机号有问题reject', reject);
+    }
+  );
+};
+// 组件卸载时也清空 timerId
+onUnmounted(() => {
+  // 清空计时器
+  window.clearInterval(timerId);
+});
 </script>
 
 <template>
@@ -66,7 +126,7 @@ const login = async (formValues: { mobile: string; password: string }) => {
     </div>
     <!-- 登录表单 -->
     <div class="login-form">
-      <van-form autocomplete="off" @submit="login">
+      <van-form autocomplete="off" @submit="login" ref="form">
         <van-field
           placeholder="请输入手机号"
           v-model="mobile"
@@ -98,7 +158,9 @@ const login = async (formValues: { mobile: string; password: string }) => {
           name="smsCode"
         >
           <template #button>
-            <span class="btn-send">发送验证码</span>
+            <span :class="['btn-send', counter > 0 ? 'disabled' : '']" @click="sendSms">{{
+              counter > 0 ? counter + 's之后发送' : '发送验证码'
+            }}</span>
           </template>
         </van-field>
         <div class="cp-cell">
@@ -165,6 +227,9 @@ const login = async (formValues: { mobile: string; password: string }) => {
     }
     .btn-send {
       color: var(--cp-primary);
+      &.disabled {
+        color: rgba(22, 194, 163, 0.5);
+      }
     }
   }
 

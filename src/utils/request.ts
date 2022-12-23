@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import { Toast } from 'vant';
+import router from '@/router';
 
 // 封装网路请求
 // API 请求基地址封装
@@ -46,6 +47,16 @@ instance.interceptors.response.use(
     return res.data;
   },
   (error) => {
-    Promise.reject(error);
+    // 3、网络错误的统一处理：401 token过期或者认证失败
+    if (error.response.status === 401) {
+      // 3.1 清理我们保存的用户信息
+      const userStore = useUserStore();
+      userStore.delUser();
+      // 3.2 从当前失效页面，跳转到登录页面
+      // 操作路由：当前是非组件的上下文，想要操作路由只能导入我们自己暴露的路由
+      console.log(router.currentRoute.value.fullPath);
+      router.push(`/login?returnURL=${router.currentRoute.value.fullPath}`);
+    }
+    return Promise.reject(error);
   }
 );

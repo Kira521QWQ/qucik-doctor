@@ -1,10 +1,11 @@
 import { instance as request } from '@/utils/request';
+import type { User, Data } from '@/types/user';
 
 // 封装用户相关的网络请求
 
 // 密码登录的网络请求
 export const loginByPassword = async (mobile: string, password: string) => {
-  const res = await request.post('/login/password', {
+  const res = await request.post<User, Data<User>>('/login/password', {
     mobile: mobile,
     password: password,
   });
@@ -15,7 +16,7 @@ export const loginByPassword = async (mobile: string, password: string) => {
 
 // 验证码登录
 export const loginByCode = async (mobile: string, code: string) => {
-  const res = await request.post('/login', {
+  const res = await request.post<User, Data<User>>('/login', {
     mobile: mobile,
     code: code,
   });

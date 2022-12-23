@@ -9,6 +9,7 @@ const router = createRouter({
       // 懒加载形式
       component: () => import('@/views/Login/index.vue'),
     },
+    { path: '/test', component: () => import('@/views/Test/TestPage.vue') },
   ],
 });
 

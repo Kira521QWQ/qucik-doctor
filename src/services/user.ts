@@ -9,7 +9,8 @@ export const loginByPassword = async (mobile: string, password: string) => {
     password: password,
   });
   // 把返回数据给到页面
-  return res.data.data;
+  console.log('密码登录的res', res);
+  return res.data;
 };
 
 // 验证码登录
@@ -19,12 +20,12 @@ export const loginByCode = async (mobile: string, code: string) => {
     code: code,
   });
   // 把返回数据给到页面
-  return res.data.data;
+  return res.data;
 };
 
 // 发送验证码请求
 export const getSMSCode = async (mobile: string, type: string) => {
   // 发送请求
   const res = await request.get('/code', { params: { mobile, type } });
-  return res.data.data;
+  return res.data;
 };

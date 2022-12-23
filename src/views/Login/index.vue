@@ -21,17 +21,25 @@ const password = ref('');
 // 页面状态数据
 const isAgree = ref(false);
 const isShowPwd = ref(false);
+// 登录方式的条件
 const isPwdLogin = ref(true);
+// 验证码
+const smsCode = ref('');
 
 // 配置表单校验，对象数组
 const mobileRules = [
   { required: true, message: '请输入手机号' },
   { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' },
 ];
-
+// 密码校验规则
 const passwordRules = [
   { required: true, message: '请输入密码' },
   { pattern: /^\w{8,24}$/, message: '密码需8-24个字符' },
+];
+// 验证码规则
+const codeRules = [
+  { required: true, message: '请输入验证码' },
+  { pattern: /^\d{6}$/, message: '验证码6位数字' },
 ];
 
 // 登录事件处理
@@ -50,9 +58,9 @@ const login = async (formValues: { mobile: string; password: string }) => {
     <CpNavBar title="登录" rightText="注册" @click-right="onClickRight" />
     <!-- 登录方式 -->
     <div class="login-head">
-      <span class="title">密码登录</span>
-      <a class="sms" href="javascript:;">
-        <span>短信验证码登录</span>
+      <span class="title">{{ isPwdLogin ? '密码登录' : '短信登录' }}</span>
+      <a class="sms" href="javascript:;" @click="isPwdLogin = !isPwdLogin">
+        <span>{{ isPwdLogin ? '短信验证码登录' : '密码登录' }}</span>
         <van-icon name="arrow"></van-icon>
       </a>
     </div>
@@ -68,6 +76,7 @@ const login = async (formValues: { mobile: string; password: string }) => {
         ></van-field>
         <van-field
           placeholder="请输入密码"
+          v-if="isPwdLogin"
           v-model="password"
           name="password"
           :rules="passwordRules"
@@ -78,6 +87,18 @@ const login = async (formValues: { mobile: string; password: string }) => {
               :name="isShowPwd ? 'login-eye-on' : 'login-eye-off'"
               @click="isShowPwd = !isShowPwd"
             />
+          </template>
+        </van-field>
+        <!-- 短信登录 -->
+        <van-field
+          placeholder="请输入验证码"
+          v-else
+          :rules="codeRules"
+          v-model="smsCode"
+          name="smsCode"
+        >
+          <template #button>
+            <span class="btn-send">发送验证码</span>
           </template>
         </van-field>
         <div class="cp-cell">
@@ -141,6 +162,9 @@ const login = async (formValues: { mobile: string; password: string }) => {
           margin: 0 6px;
         }
       }
+    }
+    .btn-send {
+      color: var(--cp-primary);
     }
   }
 

@@ -3,7 +3,7 @@ import { ref, onUnmounted } from 'vue';
 // 导入保存用户信息的store
 import { useUserStore } from '@/stores/user';
 // 业务网络请求
-import { loginByPassword } from '@/services/user';
+import { loginByPassword, loginByCode, getSMSCode } from '@/services/user';
 import { Toast, type FormInstance } from 'vant';
 
 // 创建userStore
@@ -51,10 +51,20 @@ const codeRules = [
 // 登录事件处理
 const login = async (formValues: { mobile: string; password: string }) => {
   if (!isAgree.value) return Toast('请勾选已同意');
-  // 发起登录网络请求
-  const user = await loginByPassword(formValues.mobile, formValues.password);
-  // 登录成功之后保存用户登录信息到store中
-  userStore.setUser(user);
+
+  // 判断用户登录方式
+  // 密码登录
+  if (isPwdLogin.value) {
+    // 发起登录网络请求
+    const user = await loginByPassword(formValues.mobile, formValues.password);
+    // 登录成功之后保存用户登录信息到store中
+    userStore.setUser(user);
+  } else {
+    // 验证码登录
+    const user = await loginByCode(formValues.mobile, smsCode.value);
+    // 登录成功之后保存用户登录信息到store中
+    userStore.setUser(user);
+  }
 };
 // 发送验证码的事件处理函数
 const sendSms = () => {
@@ -81,7 +91,7 @@ const sendSms = () => {
   //   });
   // 3、.then 的第二个参数就是异常处理
   form.value?.validate('mobile').then(
-    (resolve) => {
+    async (resolve) => {
       console.log('验证通过resolve', resolve);
       // 如果当前计时中，则返回
       if (counter.value > 0) return;
@@ -99,6 +109,10 @@ const sendSms = () => {
           window.clearInterval(timerId);
         }
       }, 1000);
+
+      // 告诉服务器，发送验证码
+      const code = await getSMSCode(mobile.value, 'login');
+      console.log(code);
     },
     (reject) => {
       console.log('手机号有问题reject', reject);

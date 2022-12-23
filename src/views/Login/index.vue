@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
+// 导入路由管理和路由实例
+import { useRouter, useRoute } from 'vue-router';
 // 导入保存用户信息的store
 import { useUserStore } from '@/stores/user';
 // 业务网络请求
@@ -8,6 +10,9 @@ import { Toast, type FormInstance } from 'vant';
 
 // 创建userStore
 const userStore = useUserStore();
+// 创建路由对应的实例：相当于原来的 $router 和 $route
+const router = useRouter();
+const route = useRoute();
 
 // 父组件绑定子组件暴露的事件处理函数
 const onClickRight = () => {
@@ -59,11 +64,31 @@ const login = async (formValues: { mobile: string; password: string }) => {
     const user = await loginByPassword(formValues.mobile, formValues.password);
     // 登录成功之后保存用户登录信息到store中
     userStore.setUser(user);
+    // 获取路由的query传参信息
+    console.log(route.query);
+    console.log(route.query.returnURL);
+    // 有回跳地址
+    // router.push((route.query.returnURL as string) || '/user');
+    // 上面的跳转代码和下面的等价
+    if (route.query.returnURL) {
+      router.push(route.query.returnURL as string);
+    } else {
+      // 去个人页面
+      router.push('/user');
+    }
+    Toast.success('登录成功');
   } else {
     // 验证码登录
     const user = await loginByCode(formValues.mobile, smsCode.value);
     // 登录成功之后保存用户登录信息到store中
     userStore.setUser(user);
+    if (route.query.returnURL) {
+      router.push(route.query.returnURL as string);
+    } else {
+      // 去个人页面
+      router.push('/user');
+    }
+    Toast.success('登录成功');
   }
 };
 // 发送验证码的事件处理函数

@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,18 @@ const router = createRouter({
     },
     { path: '/test', component: () => import('@/views/Test/TestPage.vue') },
   ],
+});
+
+// 全局路由守卫
+router.beforeEach((to) => {
+  // 你访问任何路由之前，我要进行判断
+  // 1、你登录没有
+  // 2、你访问的不是 login 页面
+  const userStore = useUserStore();
+  if (!userStore.user?.token && to.fullPath !== '/login') return '/login';
+
+  // 除此之外，放行
+  return true;
 });
 
 export default router;

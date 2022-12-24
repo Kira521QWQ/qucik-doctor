@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { Dialog } from 'vant';
 import type { UserInfo } from '@/types/user';
 import { getUserInfo } from '@/services/user';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const router = useRouter();
 
 // 定义响应式数据容器
 const userInfo = ref<UserInfo>();
@@ -16,6 +22,28 @@ const tools = [
   { label: '官方客服', path: '/' },
   { label: '设置', path: '/' },
 ];
+
+// 推出登录的事件处理函数
+const logout = () => {
+  console.log(3);
+  Dialog.confirm({
+    title: '温馨提示',
+    message: '您确认要退出优医问诊吗？',
+    // 确认取消，可以不写。
+    cancelButtonText: '取消',
+    confirmButtonText: '确认',
+  })
+    .then((succ) => {
+      console.log('点击了确认', succ);
+      // 清除token
+      userStore.delUser();
+      // 页面跳转
+      router.push('/login');
+    })
+    .catch((cancel) => {
+      console.log('点击了取消', cancel);
+    });
+};
 
 // 页面挂载后发起请求
 onMounted(async () => {
@@ -103,6 +131,8 @@ onMounted(async () => {
         <template #icon><CpIcon :name="`user-tool-0${i + 1}`" /></template>
       </van-cell>
     </div>
+    <!-- 退出登录 -->
+    <a class="logout" href="javascript:;" @click="logout">退出登录</a>
   </div>
 </template>
 
@@ -200,6 +230,15 @@ onMounted(async () => {
       font-size: 17px;
       margin-right: 10px;
     }
+  }
+
+  // 退出登录
+  .logout {
+    display: block;
+    margin: 20px auto;
+    width: 100px;
+    text-align: center;
+    color: var(--cp-price);
   }
 }
 </style>

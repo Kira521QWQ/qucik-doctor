@@ -20,6 +20,14 @@ const showPopup = () => {
   show.value = true;
 };
 
+// 弹出层性别选择数据
+const options = [
+  { label: '男', value: 1 },
+  { label: '女', value: 0 },
+];
+// 弹出层性别选中数据
+const gender = ref<string | number>(0);
+
 // back 事件处理函数
 const back = (e: string) => {
   console.log('=======>', e);
@@ -54,6 +62,7 @@ onMounted(() => {
     </div>
     <!-- 添加提示 -->
     <div class="patient-tip" v-if="list.length < 6">最多可添加 6 人</div>
+    {{ gender }}
     <!-- 弹窗UI -->
     <van-popup v-model:show="show" position="right">
       <!-- <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" /> -->
@@ -63,7 +72,14 @@ onMounted(() => {
         <van-field label="真实姓名" placeholder="请输入真实姓名" />
         <van-field label="身份证号" placeholder="请输入身份证号" />
         <van-field label="性别">
-          <template #input><CpRadioBtn /></template>
+          <template #input>
+            <!-- <CpRadioBtn
+              :options="options"
+              :modelValue="gender"
+              @update:modelValue="gender = $event"
+            /> -->
+            <CpRadioBtn :options="options" v-model="gender" />
+          </template>
         </van-field>
         <van-field label="默认就诊人">
           <template #input>

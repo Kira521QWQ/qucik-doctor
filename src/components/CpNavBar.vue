@@ -6,9 +6,11 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 // 封装数据
-defineProps<{
+const props = defineProps<{
   title?: string;
   rightText?: string;
+  // 还可以传递函数
+  back?: () => void;
 }>();
 
 // 封装事件，把导航栏右侧按钮的点击事件暴露给父组件
@@ -25,6 +27,12 @@ const onClickRight = () => {
 // 左侧箭头的事件处理函数
 const onClickLeft = () => {
   console.log('左侧箭头点击');
+  // 判断是否传递了函数
+  if (props.back) {
+    // 如果传了函数，则执行父组件传递的函数
+    props.back();
+    return;
+  }
   // 返回上一层路由
   router.back();
 };

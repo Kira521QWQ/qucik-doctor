@@ -13,6 +13,13 @@ const loadList = async () => {
   list.value = res;
 };
 
+// 弹窗是否显示,状态变量
+const show = ref(false);
+// 弹窗是否显示事件处理函数
+const showPopup = () => {
+  show.value = true;
+};
+
 onMounted(() => {
   loadList();
 });
@@ -30,17 +37,22 @@ onMounted(() => {
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon"><CpIcon name="user-edit" /></div>
+        <div class="icon" @click="showPopup"><CpIcon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
     </div>
     <!-- 添加患者 -->
-    <div class="patient-add">
+    <div class="patient-add" @click="showPopup">
       <CpIcon name="user-add" />
       <p>添加患者</p>
     </div>
     <!-- 添加提示 -->
     <div class="patient-tip" v-if="list.length < 6">最多可添加 6 人</div>
+    <!-- 弹窗UI -->
+    <van-popup v-model:show="show" position="right">
+      <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" />
+      <div>弹窗表单</div>
+    </van-popup>
   </div>
 </template>
 
@@ -125,6 +137,14 @@ onMounted(() => {
     color: var(--cp-tag);
     padding: 12px 0;
     margin: 0 15px;
+  }
+
+  // 弹窗样式修改
+  :deep() {
+    .van-popup {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 </style>

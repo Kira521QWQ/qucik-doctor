@@ -20,6 +20,12 @@ const showPopup = () => {
   show.value = true;
 };
 
+// back 事件处理函数
+const back = (e: string) => {
+  console.log('=======>', e);
+  show.value = false;
+};
+
 onMounted(() => {
   loadList();
 });
@@ -50,8 +56,21 @@ onMounted(() => {
     <div class="patient-tip" v-if="list.length < 6">最多可添加 6 人</div>
     <!-- 弹窗UI -->
     <van-popup v-model:show="show" position="right">
-      <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" />
-      <div>弹窗表单</div>
+      <!-- <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" /> -->
+      <CpNavBar :back="back" title="添加患者" right-text="保存" />
+      <!-- 弹窗表单 -->
+      <van-form autocomplete="off">
+        <van-field label="真实姓名" placeholder="请输入真实姓名" />
+        <van-field label="身份证号" placeholder="请输入身份证号" />
+        <van-field label="性别">
+          <template #input><CpRadioBtn /></template>
+        </van-field>
+        <van-field label="默认就诊人">
+          <template #input>
+            <van-checkbox round />
+          </template>
+        </van-field>
+      </van-form>
     </van-popup>
   </div>
 </template>

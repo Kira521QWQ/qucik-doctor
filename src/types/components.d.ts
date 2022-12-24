@@ -1,6 +1,7 @@
 // 导入我们自定义的组件
 import CpNavBar from '@/components/CpNavBar.vue';
 import CpIcon from '@/components/CpIcon.vue';
+import CpRadioBtn from '@/components/CpRadioBtn.vue';
 
 // 注册到全局组件
 declare module 'vue' {
@@ -8,5 +9,6 @@ declare module 'vue' {
   interface GlobalComponents {
     CpNavBar: typeof CpNavBar;
     CpIcon: typeof CpIcon;
+    CpRadioBtn: typeof CpRadioBtn;
   }
 }

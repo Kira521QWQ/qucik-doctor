@@ -10,7 +10,7 @@ const props = defineProps<{
   title?: string;
   rightText?: string;
   // 还可以传递函数
-  back?: () => void;
+  back?: (xxx: string) => void;
 }>();
 
 // 封装事件，把导航栏右侧按钮的点击事件暴露给父组件
@@ -30,7 +30,7 @@ const onClickLeft = () => {
   // 判断是否传递了函数
   if (props.back) {
     // 如果传了函数，则执行父组件传递的函数
-    props.back();
+    props.back('xxx');
     return;
   }
   // 返回上一层路由

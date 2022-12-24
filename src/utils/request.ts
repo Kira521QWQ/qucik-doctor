@@ -18,12 +18,12 @@ instance.interceptors.request.use(
     // 在我们的每次请求发起后，请求头中追加 token
     const userStore = useUserStore();
     // 有token就追加token
-    console.log('追加前', config);
+    // console.log('追加前', config);
     if (userStore.user?.token && config.headers) {
       // 追加请求头数据
       config.headers['Authorization'] = `Bearer ${userStore.user?.token}`;
     }
-    console.log('追加后', config);
+    // console.log('追加后', config);
     return config;
   },
   (error) => {
@@ -34,7 +34,7 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (res) => {
-    console.log('原始res', res);
+    // console.log('原始res', res);
 
     // 2、公司业务逻辑的统一处理
     if (res.data.code !== 10000) {

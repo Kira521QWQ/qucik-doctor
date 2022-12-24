@@ -9,7 +9,7 @@ const userInfo = ref<UserInfo>();
 // 页面挂载后发起请求
 onMounted(async () => {
   const res = await getUserInfo();
-  console.log(res);
+  console.log('用户个人信息', res);
   // 设置页面数据
   userInfo.value = res;
 });

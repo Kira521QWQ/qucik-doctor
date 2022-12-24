@@ -6,6 +6,17 @@ import { getUserInfo } from '@/services/user';
 // 定义响应式数据容器
 const userInfo = ref<UserInfo>();
 
+// 快捷工具显示配置数据。非响应式数据，没有使用 ref
+const tools = [
+  { label: '我的问诊', path: '/user/consult' },
+  { label: '我的处方', path: '/' },
+  { label: '家庭档案', path: '/user/patient' },
+  { label: '地址管理', path: '/user/address' },
+  { label: '我的评价', path: '/' },
+  { label: '官方客服', path: '/' },
+  { label: '设置', path: '/' },
+];
+
 // 页面挂载后发起请求
 onMounted(async () => {
   const res = await getUserInfo();
@@ -16,35 +27,31 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="user">
+  <div class="user" v-if="userInfo">
     <!-- 头部 -->
     <div class="user-head">
       <div class="top">
-        <van-image
-          round
-          fit="cover"
-          src="https://yanxuan-item.nosdn.127.net/ef302fbf967ea8f439209bd747738aba.png"
-        />
+        <van-image round fit="cover" :src="userInfo.avatar" />
         <div class="name">
-          <p>用户907456</p>
+          <p>{{ userInfo.account }}</p>
           <p><van-icon name="edit" /></p>
         </div>
       </div>
       <van-row>
         <van-col span="6">
-          <p>150</p>
+          <p>{{ userInfo.collectionNumber }}</p>
           <p>收藏</p>
         </van-col>
         <van-col span="6">
-          <p>23</p>
+          <p>{{ userInfo.likeNumber }}</p>
           <p>关注</p>
         </van-col>
         <van-col span="6">
-          <p>270</p>
+          <p>{{ userInfo.score }}</p>
           <p>积分</p>
         </van-col>
         <van-col span="6">
-          <p>3</p>
+          <p>{{ userInfo.couponNumber }}</p>
           <p>优惠券</p>
         </van-col>
       </van-row>
@@ -57,22 +64,44 @@ onMounted(async () => {
       </div>
       <van-row>
         <van-col span="6">
-          <CpIcon name="user-paid" />
+          <van-badge :content="userInfo.orderInfo.paidNumber || ''">
+            <CpIcon name="user-paid" />
+          </van-badge>
           <p>待付款</p>
         </van-col>
         <van-col span="6">
-          <CpIcon name="user-shipped" />
+          <van-badge :content="userInfo.orderInfo.shippedNumber || ''">
+            <CpIcon name="user-shipped" />
+          </van-badge>
           <p>待发货</p>
         </van-col>
         <van-col span="6">
-          <CpIcon name="user-received" />
+          <van-badge :content="userInfo.orderInfo.receivedNumber || ''">
+            <CpIcon name="user-received" />
+          </van-badge>
           <p>待收货</p>
         </van-col>
         <van-col span="6">
-          <CpIcon name="user-finished" />
+          <van-badge :content="userInfo.orderInfo.finishedNumber || ''">
+            <CpIcon name="user-finished" />
+          </van-badge>
           <p>已完成</p>
         </van-col>
       </van-row>
+    </div>
+    <!-- 快捷工具 -->
+    <div class="user-group">
+      <h3>快捷工具</h3>
+      <van-cell
+        :title="item.label"
+        is-link
+        :to="item.path"
+        v-for="(item, i) in tools"
+        :key="item.label"
+        :border="false"
+      >
+        <template #icon><CpIcon :name="`user-tool-0${i + 1}`" /></template>
+      </van-cell>
     </div>
   </div>
 </template>
@@ -152,6 +181,24 @@ onMounted(async () => {
         font-size: 12px;
         padding-top: 4px;
       }
+    }
+  }
+
+  // 快捷工具
+  .user-group {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    h3 {
+      padding-left: 16px;
+      line-height: 44px;
+    }
+    .van-cell {
+      align-items: center;
+    }
+    .cp-icon {
+      font-size: 17px;
+      margin-right: 10px;
     }
   }
 }

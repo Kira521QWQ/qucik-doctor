@@ -1,5 +1,5 @@
 import { instance as request } from '@/utils/request';
-import type { User, Data } from '@/types/user';
+import type { User, Data, UserInfo } from '@/types/user';
 
 // 封装用户相关的网络请求
 
@@ -28,5 +28,12 @@ export const loginByCode = async (mobile: string, code: string) => {
 export const getSMSCode = async (mobile: string, type: string) => {
   // 发送请求
   const res = await request.get('/code', { params: { mobile, type } });
+  return res.data;
+};
+
+// 获取个人信息
+export const getUserInfo = async () => {
+  // 发请求
+  const res = await request.get<UserInfo, Data<UserInfo>>('/patient/myUser');
   return res.data;
 };

@@ -21,3 +21,28 @@ export type User = {
   // 头像
   avatar: string;
 };
+
+// 复用一下 User 类型
+type UserOmitToken = Omit<User, 'token'>;
+export type UserInfo = UserOmitToken & {
+  likeNumber: number;
+  collectionNumber: number;
+  score: number;
+  couponNumber: number;
+  orderInfo: {
+    paidNumber: number;
+    receivedNumber: number;
+    shippedNumber: number;
+    finishedNumber: number;
+  };
+};
+
+// 泛型工具函数 Pick 的使用，TS 自带的，直接使用(摘取)
+type Person = {
+  name: string;
+  age: number;
+};
+type PickPerson = Pick<Person, 'name'>;
+
+// 泛型工具函数 Omit 的使用（减去）
+type OmitPerson = Omit<Person, 'name'>;

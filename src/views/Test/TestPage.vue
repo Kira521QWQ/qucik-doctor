@@ -7,6 +7,8 @@ const counter = ref(10);
 let timerId: number;
 const startCounter = () => {
   // 开启倒计时
+  // 重置时间
+  counter.value = 10;
   // 1 清
   window.clearInterval(timerId);
   timerId = window.setInterval(() => {

@@ -24,25 +24,58 @@ const tools = [
 ];
 
 // 推出登录的事件处理函数
-const logout = () => {
-  console.log(3);
-  Dialog.confirm({
-    title: '温馨提示',
-    message: '您确认要退出优医问诊吗？',
-    // 确认取消，可以不写。
-    cancelButtonText: '取消',
-    confirmButtonText: '确认',
-  })
-    .then((succ) => {
-      console.log('点击了确认', succ);
-      // 清除token
-      userStore.delUser();
-      // 页面跳转
-      router.push('/login');
-    })
-    .catch((cancel) => {
-      console.log('点击了取消', cancel);
+const logout = async () => {
+  // 用 await 处理，不 try catch
+  // const succ = await Dialog.confirm({
+  //   title: '温馨提示',
+  //   message: '您确认要退出优医问诊吗？',
+  //   // 确认取消，可以不写。
+  //   cancelButtonText: '取消',
+  //   confirmButtonText: '确认',
+  // });
+  // // 没有异常，走这里，就是点击了确认
+  // console.log('点击了确认', succ);
+  // // 清除token
+  // userStore.delUser();
+  // // 页面跳转
+  // router.push('/login');
+
+  // 用 try catch 的处理
+  try {
+    const succ = await Dialog.confirm({
+      title: '温馨提示',
+      message: '您确认要退出优医问诊吗？',
+      // 确认取消，可以不写。
+      cancelButtonText: '取消',
+      confirmButtonText: '确认',
     });
+    // 没有异常，走这里，就是点击了确认
+    console.log('点击了确认', succ);
+    // 清除token
+    userStore.delUser();
+    // 页面跳转
+    router.push('/login');
+  } catch (error) {
+    console.log(error, '用户点击了取消');
+  }
+
+  // Dialog.confirm({
+  //   title: '温馨提示',
+  //   message: '您确认要退出优医问诊吗？',
+  //   // 确认取消，可以不写。
+  //   cancelButtonText: '取消',
+  //   confirmButtonText: '确认',
+  // })
+  //   .then((succ) => {
+  //     console.log('点击了确认', succ);
+  //     // 清除token
+  //     userStore.delUser();
+  //     // 页面跳转
+  //     router.push('/login');
+  //   })
+  //   .catch((cancel) => {
+  //     console.log('点击了取消', cancel);
+  //   });
 };
 
 // 页面挂载后发起请求

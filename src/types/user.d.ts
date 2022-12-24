@@ -37,6 +37,26 @@ export type UserInfo = UserOmitToken & {
   };
 };
 
+// 家庭档案-患者信息
+export type Patient = {
+  // 患者ID
+  id: string;
+  // 患者名称
+  name: string;
+  // 身份证号
+  idCard: string;
+  // 0不默认  1默认
+  defaultFlag: 0 | 1;
+  // 0 女  1 男
+  gender: 0 | 1;
+  // 性别文字
+  genderValue: string;
+  // 年龄
+  age: number;
+};
+// 返回的是患者信息数组
+export type PatientList = Patient[];
+
 // 泛型工具函数 Pick 的使用，TS 自带的，直接使用(摘取)
 type Person = {
   name: string;

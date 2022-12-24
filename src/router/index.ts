@@ -40,6 +40,11 @@ const router = createRouter({
       ],
     },
     {
+      path: '/user/patient',
+      component: () => import('@/views/Layout/User/PatientPage.vue'),
+      meta: { title: '家庭档案' },
+    },
+    {
       path: '/test',
       component: () => import('@/views/Test/TestPage.vue'),
       meta: { title: '测试玩' },

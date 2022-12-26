@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PatientList, Patient } from '@/types/user';
-import { getPatientList, addPatient } from '@/services/user';
+import { getPatientList, addPatient, editPatient } from '@/services/user';
 import { ref, onMounted } from 'vue';
 import { Toast } from 'vant';
 
@@ -29,7 +29,28 @@ const loadList = async () => {
 // 弹窗是否显示,状态变量
 const show = ref(false);
 // 弹窗是否显示事件处理函数
-const showPopup = () => {
+const showPopup = (item?: Patient) => {
+  // 根据是否传递患者信息来判断是新增还是编辑
+  if (item) {
+    // 编辑
+    // 一个一个添加
+    patient.value = {
+      id: item.id,
+      name: item.name,
+      idCard: item.idCard,
+      gender: item.gender,
+      defaultFlag: item.defaultFlag,
+    };
+
+    // 删除对象属性的写法
+    // delete item.age;
+    // delete item.genderValue;
+    // patient.value = { ...item };
+  } else {
+    // 新增
+    patient.value = { ...initPatient };
+  }
+
   show.value = true;
 };
 
@@ -51,11 +72,20 @@ const back = (e: string) => {
 // 导航组件右侧的事件处理函数
 const submit = async () => {
   console.log(patient.value);
-  // 发起新增患者请求
-  const res = await addPatient(patient.value);
-  console.log('新增患者信息结果', res);
-  // 1、提示用户
-  Toast.success('新增成功');
+  // 根据是否有patien.id来区分编辑还是新增
+  if (patient.value.id) {
+    // 编辑
+    const res = await editPatient(patient.value);
+    console.log('编辑患者信息结果', res);
+    // 1、提示用户
+    Toast.success('编辑成功');
+  } else {
+    // 发起新增患者请求
+    const res = await addPatient(patient.value);
+    console.log('新增患者信息结果', res);
+    // 1、提示用户
+    Toast.success('新增成功');
+  }
   // 2、关闭弹窗
   show.value = false;
   // 3、重新请求数据
@@ -89,12 +119,12 @@ onMounted(() => {
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon" @click="showPopup"><CpIcon name="user-edit" /></div>
+        <div class="icon" @click="showPopup(item)"><CpIcon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
     </div>
     <!-- 添加患者 -->
-    <div class="patient-add" @click="showPopup">
+    <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
       <CpIcon name="user-add" />
       <p>添加患者</p>
     </div>

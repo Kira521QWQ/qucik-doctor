@@ -52,3 +52,11 @@ export const addPatient = async (patient: Patient) => {
   // 返回给页面
   return res.data;
 };
+
+// 编辑（更新）患者信息（家庭档案信息）
+export const editPatient = async (patient: Patient) => {
+  // 发请求
+  const res = await request.put('/patient/update', patient);
+  // 返回给页面
+  return res.data;
+};

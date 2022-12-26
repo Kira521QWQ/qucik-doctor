@@ -49,7 +49,7 @@ const finished = ref(false);
       :finished="finished"
       finished-text="所有数据加载完毕"
     >
-      <KnowledgeItem v-for="i in list" :key="i"></KnowledgeItem>
+      <KnowledgeItem v-for="item in list" :key="item.id"></KnowledgeItem>
     </van-list>
   </div>
 </template>

@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import type { PatientList, Patient } from '@/types/user';
-import { getPatientList } from '@/services/user';
+import { getPatientList, addPatient } from '@/services/user';
 import { ref, onMounted } from 'vue';
+import { Toast } from 'vant';
 
 // 患者信息的工具对象
 const initPatient: Patient = {
-  name: 'xxx',
-  idCard: 'yyy',
+  name: '',
+  idCard: '',
   gender: 0, // 性别：0是女，1是男
-  defaultFlag: 1, // 默认就诊人 0是非默认
+  defaultFlag: 0, // 默认就诊人 0是非默认
 };
 
 // 定义数据容器
 const list = ref<PatientList>();
 // 发起家庭档案信息请求
 const loadList = async () => {
-  const res = await getPatientList();
-  console.log('patient list', res);
-  // 赋值给页面
-  list.value = res;
+  try {
+    const res = await getPatientList();
+    console.log('patient list', res);
+    // 赋值给页面
+    list.value = res;
+  } catch (error) {
+    console.log('error', error);
+  }
 };
 
 // 弹窗是否显示,状态变量
@@ -41,6 +46,30 @@ const patient = ref<Patient>({ ...initPatient });
 const back = (e: string) => {
   console.log('=======>', e);
   show.value = false;
+};
+
+// 导航组件右侧的事件处理函数
+const submit = async () => {
+  console.log(patient.value);
+  // 发起新增患者请求
+  const res = await addPatient(patient.value);
+  console.log('新增患者信息结果', res);
+  // 1、提示用户
+  Toast.success('新增成功');
+  // 2、关闭弹窗
+  show.value = false;
+  // 3、重新请求数据
+  loadList();
+};
+
+const patientFlagHandler = (e: boolean) => {
+  console.log(e);
+  // 父组件修改父组件的数据，父组件才会刷新=>子组件也会刷新（传递给子组件的数据也变了）
+  if (e) {
+    patient.value.defaultFlag = 1;
+  } else {
+    patient.value.defaultFlag = 0;
+  }
 };
 
 onMounted(() => {
@@ -75,7 +104,7 @@ onMounted(() => {
     <!-- 弹窗UI -->
     <van-popup v-model:show="show" position="right">
       <!-- <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" /> -->
-      <CpNavBar :back="back" title="添加患者" right-text="保存" />
+      <CpNavBar :back="back" title="添加患者" right-text="保存" @click-right="submit" />
       <!-- 弹窗表单 -->
       <van-form autocomplete="off">
         <van-field v-model="patient.name" label="真实姓名" placeholder="请输入真实姓名" />
@@ -93,7 +122,13 @@ onMounted(() => {
         <van-field label="默认就诊人">
           <template #input>
             <!-- v-model 语法糖的分步骤写法 -->
-            <van-checkbox round :modelValue="patient.defaultFlag === 1" />
+            <van-checkbox
+              round
+              :modelValue="patient.defaultFlag === 1"
+              @update:modelValue="patientFlagHandler"
+            />
+            <!-- 事件绑定和上面的等价 -->
+            <!-- @update:modelValue="patient.defaultFlag = $event ? 1 : 0" -->
             <!-- 和上面等价 -->
             <!-- <van-checkbox round :modelValue="patient.defaultFlag === 1 ? true : false" /> -->
           </template>

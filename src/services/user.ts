@@ -1,5 +1,5 @@
 import { instance as request } from '@/utils/request';
-import type { User, Data, UserInfo, PatientList } from '@/types/user';
+import type { User, Data, UserInfo, PatientList, Patient } from '@/types/user';
 
 // 封装用户相关的网络请求
 
@@ -42,5 +42,13 @@ export const getUserInfo = async () => {
 export const getPatientList = async () => {
   // 发请求
   const res = await request.get<PatientList, Data<PatientList>>('/patient/mylist');
+  return res.data;
+};
+
+// 新增患者信息（家庭档案信息）
+export const addPatient = async (patient: Patient) => {
+  // 发请求
+  const res = await request.post('/patient/add', patient);
+  // 返回给页面
   return res.data;
 };

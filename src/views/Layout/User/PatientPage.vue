@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PatientList, Patient } from '@/types/user';
-import { getPatientList, addPatient, editPatient } from '@/services/user';
+import { getPatientList, addPatient, editPatient, delPatient } from '@/services/user';
 import { ref, onMounted } from 'vue';
-import { Toast } from 'vant';
+import { Dialog, Toast } from 'vant';
 
 // 患者信息的工具对象
 const initPatient: Patient = {
@@ -102,6 +102,30 @@ const patientFlagHandler = (e: boolean) => {
   }
 };
 
+const remove = async () => {
+  console.log('del');
+  // 如果有 patien.value.id 才能删除
+  if (patient.value.id) {
+    // 弹窗确认
+    await Dialog.confirm({
+      title: '温馨提示',
+      message: `您确认要删除 ${patient.value.name} 患者信息吗 ？`,
+    });
+    // 用户点击了确认，才会走到这里
+    console.log('ok');
+    // 发起删除请求
+    const res = await delPatient(patient.value.id);
+    console.log('删除结果', res);
+
+    // 提示用户
+    Toast.success('删除成功');
+    // 弹窗隐藏
+    show.value = false;
+    // 重新发起请求
+    loadList();
+  }
+};
+
 onMounted(() => {
   loadList();
 });
@@ -134,7 +158,12 @@ onMounted(() => {
     <!-- 弹窗UI -->
     <van-popup v-model:show="show" position="right">
       <!-- <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" /> -->
-      <CpNavBar :back="back" title="添加患者" right-text="保存" @click-right="submit" />
+      <CpNavBar
+        :back="back"
+        :title="patient.id ? '编辑患者' : '添加患者'"
+        right-text="保存"
+        @click-right="submit"
+      />
       <!-- 弹窗表单 -->
       <van-form autocomplete="off">
         <van-field v-model="patient.name" label="真实姓名" placeholder="请输入真实姓名" />
@@ -164,6 +193,10 @@ onMounted(() => {
           </template>
         </van-field>
       </van-form>
+
+      <van-action-bar v-if="patient.id">
+        <van-action-bar-button @click="remove">删除</van-action-bar-button>
+      </van-action-bar>
     </van-popup>
   </div>
 </template>
@@ -256,6 +289,15 @@ onMounted(() => {
     .van-popup {
       width: 100%;
       height: 100%;
+    }
+  }
+  // 底部操作栏
+  .van-action-bar {
+    padding: 0 10px;
+    margin-bottom: 10px;
+    .van-button {
+      color: var(--cp-price);
+      background-color: var(--cp-bg);
     }
   }
 }

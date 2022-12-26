@@ -60,3 +60,11 @@ export const editPatient = async (patient: Patient) => {
   // 返回给页面
   return res.data;
 };
+
+// 删除患者信息（家庭档案信息）
+export const delPatient = async (id: String) => {
+  // 发请求
+  const res = await request.delete('/patient/del/' + id);
+  // 返回给页面
+  return res.data;
+};

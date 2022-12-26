@@ -12,7 +12,8 @@ export type Knowledge = {
   id: string;
   title: string;
   coverUrl: string[];
-  topics: string[];
+  // topics: string[];
+  topic: string;
   collectionNumber: number;
   commentNumber: number;
   creatorName: string;

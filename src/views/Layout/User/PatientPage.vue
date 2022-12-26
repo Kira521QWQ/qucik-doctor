@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import type { PatientList } from '@/types/user';
+import type { PatientList, Patient } from '@/types/user';
 import { getPatientList } from '@/services/user';
 import { ref, onMounted } from 'vue';
+
+// 患者信息的工具对象
+const initPatient: Patient = {
+  name: 'xxx',
+  idCard: 'yyy',
+  gender: 0, // 性别：0是女，1是男
+  defaultFlag: 1, // 默认就诊人 0是非默认
+};
 
 // 定义数据容器
 const list = ref<PatientList>();
@@ -26,7 +34,8 @@ const options = [
   { label: '女', value: 0 },
 ];
 // 弹出层性别选中数据
-const gender = ref<string | number>(0);
+// const gender = ref<string | number>(0);
+const patient = ref<Patient>({ ...initPatient });
 
 // back 事件处理函数
 const back = (e: string) => {
@@ -62,15 +71,15 @@ onMounted(() => {
     </div>
     <!-- 添加提示 -->
     <div class="patient-tip" v-if="list.length < 6">最多可添加 6 人</div>
-    {{ gender }}
+    {{ patient.gender }}
     <!-- 弹窗UI -->
     <van-popup v-model:show="show" position="right">
       <!-- <CpNavBar :back="() => (show = false)" title="添加患者" right-text="保存" /> -->
       <CpNavBar :back="back" title="添加患者" right-text="保存" />
       <!-- 弹窗表单 -->
       <van-form autocomplete="off">
-        <van-field label="真实姓名" placeholder="请输入真实姓名" />
-        <van-field label="身份证号" placeholder="请输入身份证号" />
+        <van-field v-model="patient.name" label="真实姓名" placeholder="请输入真实姓名" />
+        <van-field v-model="patient.idCard" label="身份证号" placeholder="请输入身份证号" />
         <van-field label="性别">
           <template #input>
             <!-- <CpRadioBtn
@@ -78,12 +87,15 @@ onMounted(() => {
               :modelValue="gender"
               @update:modelValue="gender = $event"
             /> -->
-            <CpRadioBtn :options="options" v-model="gender" />
+            <CpRadioBtn :options="options" v-model="patient.gender" />
           </template>
         </van-field>
         <van-field label="默认就诊人">
           <template #input>
-            <van-checkbox round />
+            <!-- v-model 语法糖的分步骤写法 -->
+            <van-checkbox round :modelValue="patient.defaultFlag === 1" />
+            <!-- 和上面等价 -->
+            <!-- <van-checkbox round :modelValue="patient.defaultFlag === 1 ? true : false" /> -->
           </template>
         </van-field>
       </van-form>

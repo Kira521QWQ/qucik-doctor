@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { KnowledgeType } from '@/types/consult';
+// 导入自定义组件
+import KnowledgeList from './KnowledgeList.vue';
 
 // 类型约束
 const active = ref<KnowledgeType>('food');
@@ -78,11 +80,11 @@ const active = ref<KnowledgeType>('food');
       </van-swipe>
     </div>
     <!-- 知识列表 -->
-    <van-tabs shrink v-model:active="active">
-      <van-tab title="关注" name="like">{{ active }}</van-tab>
-      <van-tab title="推荐" name="recommend">{{ active }}</van-tab>
-      <van-tab title="减脂" name="fatReduction">{{ active }}</van-tab>
-      <van-tab title="饮食" name="food">{{ active }}</van-tab>
+    <van-tabs shrink sticky v-model:active="active">
+      <van-tab title="关注" name="like"><KnowledgeList /></van-tab>
+      <van-tab title="推荐" name="recommend"><KnowledgeList /></van-tab>
+      <van-tab title="减脂" name="fatReduction"><KnowledgeList /></van-tab>
+      <van-tab title="饮食" name="food"><KnowledgeList /></van-tab>
     </van-tabs>
   </div>
 </template>

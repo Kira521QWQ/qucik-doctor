@@ -4,8 +4,18 @@ import type { KnowledgeType } from '@/types/consult';
 // 导入自定义组件
 import KnowledgeList from './KnowledgeList.vue';
 import FollowDoctor from './FollowDoctor.vue';
+// 导入极速问诊 store
+import { useConsultStore } from '@/stores/consult';
 
-// 类型约束
+// 创建store实例
+const consultStore = useConsultStore();
+
+// 极速问诊事件处理函数
+const setConsultType = () => {
+  consultStore.setType(2);
+};
+
+// 选中的tab
 const active = ref<KnowledgeType>('like');
 </script>
 
@@ -27,7 +37,7 @@ const active = ref<KnowledgeType>('like');
           </router-link>
         </van-col>
         <van-col span="8">
-          <router-link to="/consult/fast" class="nav">
+          <router-link to="/consult/fast" class="nav" @click="setConsultType">
             <cp-icon name="home-graphic"></cp-icon>
             <p class="title">极速问诊</p>
             <p class="desc">20s医生极速回复</p>

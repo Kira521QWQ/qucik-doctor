@@ -80,3 +80,11 @@ export type DoctorPage = {
   total: number;
   rows: DoctorList;
 };
+
+// 问诊记录
+export type Consult = {
+  // 将来这里会有很多类型
+  // 问诊类型
+  // 就诊类型1找医生 2极速问诊 3开药问诊默认是1
+  type?: 1 | 2 | 3;
+};

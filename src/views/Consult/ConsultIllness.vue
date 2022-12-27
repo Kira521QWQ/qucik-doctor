@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import type { ConsultIllness } from '@/types/consult';
+
 // 病情事件
 const timeOptions = [
   { label: '一周内', value: 1 },
@@ -12,6 +15,18 @@ const flagOptions = [
   { label: '就诊过', value: 1 },
   { label: '没就诊过', value: 0 },
 ];
+
+// 病情描述相关的响应式数据
+const form = ref<ConsultIllness>({
+  // 病情描述
+  illnessDesc: '',
+  // 1周内、1月内、半年内、大于半年
+  illnessTime: undefined,
+  // 0未就诊过、1就诊过
+  consultFlag: undefined,
+  // 病情描述图片
+  pictures: [],
+});
 </script>
 
 <template>
@@ -30,16 +45,17 @@ const flagOptions = [
     <div class="illness-form">
       <van-field
         type="textarea"
+        v-model="form.illnessDesc"
         rows="3"
         placeholder="请详细描述您的病情，病情描述不能为空"
       ></van-field>
       <div class="item">
         <p>本次患病多久了？</p>
-        <CpRadioBtn :options="timeOptions" />
+        <CpRadioBtn :options="timeOptions" v-model="form.illnessTime" />
       </div>
       <div class="item">
         <p>此次病情是否去医院就诊过？</p>
-        <CpRadioBtn :options="flagOptions" />
+        <CpRadioBtn :options="flagOptions" v-model="form.consultFlag" />
       </div>
     </div>
   </div>

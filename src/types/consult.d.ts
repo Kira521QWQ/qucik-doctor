@@ -112,3 +112,14 @@ export type SecondDept = {
   // 科室icon
   avatar?: string;
 };
+
+export type ConsultIllness = {
+  // 病情描述
+  illnessDesc?: string;
+  // 1周内、1月内、半年内、大于半年
+  illnessTime?: 1 | 2 | 3 | 4;
+  // 0未就诊过、1就诊过
+  consultFlag?: 0 | 1;
+  // 病情描述图片
+  pictures?: { id: string; url: string }[];
+};

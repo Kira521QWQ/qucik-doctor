@@ -5,7 +5,13 @@ import { instance as request } from '@/utils/request';
 import type { Data } from '@/types/user';
 // 导入我们文章列表参数类型和响应数据类型
 // 响应的具体业务类型
-import type { KnowledgeParams, KnowledgePage, PageParams, DoctorPage } from '@/types/consult';
+import type {
+  KnowledgeParams,
+  KnowledgePage,
+  PageParams,
+  DoctorPage,
+  FirstDept,
+} from '@/types/consult';
 
 // 获取文章列表网络请求
 export const getKnowledgePage = async (params: KnowledgeParams) => {
@@ -36,5 +42,12 @@ export const followDoctor = async (id: string) => {
 export const followKnowledge = async (id: string) => {
   // 发起请求
   const res = await request.post('/like', { id, type: 'knowledge' });
+  return res.data;
+};
+
+// 获取所有科室数据
+export const getAllDept = async () => {
+  // 发起请求
+  const res = await request.get<FirstDept[], Data<FirstDept[]>>('/dep/all');
   return res.data;
 };

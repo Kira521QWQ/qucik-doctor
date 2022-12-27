@@ -90,3 +90,23 @@ export type Consult = {
   // 快速问诊类型，0 普通 1 三甲
   illnessType?: 0 | 1;
 };
+
+// 科室数据的类型
+export type FirstDept = {
+  // 科室ID
+  id: string;
+  // 科室名称
+  name: string;
+  // 二级科室
+  child: SecondDept[];
+};
+
+// 二级科室
+export type SecondDept = {
+  // 科室ID
+  id: string;
+  // 科室名称
+  name: string;
+  // 科室icon
+  avatar?: string;
+};

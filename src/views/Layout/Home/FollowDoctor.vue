@@ -32,7 +32,7 @@ onMounted(() => {
       <!-- swipe 组件 -->
       <van-swipe :width="150" :showIndicators="false" :loop="false">
         <van-swipe-item v-for="item in list" :key="item.id">
-          <DoctorItem :doctor="item" />
+          <DoctorItem :doctor="item" xxx="xxx" />
         </van-swipe-item>
       </van-swipe>
     </div>

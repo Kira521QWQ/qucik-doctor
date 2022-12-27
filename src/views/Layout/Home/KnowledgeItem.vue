@@ -1,7 +1,23 @@
 <script setup lang="ts">
+import { followKnowledge } from '@/services/consult';
 import type { Knowledge } from '@/types/consult';
+import { ref } from 'vue';
 
 defineProps<{ item: Knowledge }>();
+
+// 关注按钮的状态
+const loading = ref(false);
+
+// 关注按钮的事件处理函数
+const follow = async (item: Knowledge) => {
+  loading.value = true;
+  // 关注文章
+  await followKnowledge(item.id);
+  // 关注成功
+  loading.value = false;
+  // 修改关注状态
+  item.likeFlag = item.likeFlag === 1 ? 0 : 1;
+};
 </script>
 
 <template>
@@ -14,7 +30,7 @@ defineProps<{ item: Knowledge }>();
           {{ item.creatorHospatalName }} {{ item.creatorDep }} {{ item.creatorTitles }}
         </p>
       </div>
-      <van-button class="btn" size="small" round>{{
+      <van-button :loading="loading" @click="follow(item)" class="btn" size="small" round>{{
         item.likeFlag === 1 ? '已关注' : '+ 关注'
       }}</van-button>
     </div>

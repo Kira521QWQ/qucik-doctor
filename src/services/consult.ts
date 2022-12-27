@@ -31,3 +31,10 @@ export const followDoctor = async (id: string) => {
   const res = await request.post('/like', { id, type: 'doc' });
   return res.data;
 };
+
+// 关注文章
+export const followKnowledge = async (id: string) => {
+  // 发起请求
+  const res = await request.post('/like', { id, type: 'knowledge' });
+  return res.data;
+};

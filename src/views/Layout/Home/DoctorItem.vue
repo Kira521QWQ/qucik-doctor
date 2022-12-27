@@ -3,8 +3,9 @@ import { ref } from 'vue';
 import type { Doctor } from '@/types/consult';
 import { followDoctor } from '@/services/consult';
 
-defineProps<{
+const props = defineProps<{
   doctor: Doctor;
+  xxx: string;
 }>();
 
 // 定义关注请求状态
@@ -12,6 +13,14 @@ const loading = ref(false);
 
 // 关注的事件处理函数
 const follow = async (doctor: Doctor) => {
+  // props.xxx = 'yyy';
+  // doctor = { ...doctor, name: 'xxx' };
+  // 对象不可以赋新值，但是可以修改里面的属性，并且还有响应式效果
+  // console.log(props.doctor === doctor);
+  // doctor.name = 'xxx';
+  // 赋值了一个新对象，失去响应性
+  // doctor = { ...doctor, name: 'xxx' };
+
   // 开始前，设置按钮的loading状态
   loading.value = true;
   // 发起关注请求

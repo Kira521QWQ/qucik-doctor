@@ -1,5 +1,25 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import DoctorItem from './DoctorItem.vue';
+import { getDoctorPage } from '@/services/consult';
+import type { DoctorList } from '@/types/consult';
+
+// 定义响应式数据容器
+const list = ref<DoctorList>([]);
+// 获取数据的方法
+const loadData = async () => {
+  const res = await getDoctorPage({
+    current: 1,
+    pageSize: 5,
+  });
+  // 赋值给页面
+  list.value = res.rows;
+  console.log('===>', list.value);
+};
+// 组件加载完毕后调用获取数据的方法
+onMounted(() => {
+  loadData();
+});
 </script>
 
 <template>
@@ -11,8 +31,8 @@ import DoctorItem from './DoctorItem.vue';
     <div class="body">
       <!-- swipe 组件 -->
       <van-swipe :width="150" :showIndicators="false" :loop="false">
-        <van-swipe-item v-for="i in 5" :key="i">
-          <DoctorItem />
+        <van-swipe-item v-for="item in list" :key="item.id">
+          <DoctorItem :doctor="item" />
         </van-swipe-item>
       </van-swipe>
     </div>

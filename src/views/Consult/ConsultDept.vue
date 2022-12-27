@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import type { FirstDept } from '@/types/consult';
 import { getAllDept } from '@/services/consult';
+import { useConsultStore } from '@/stores/consult';
+
+const consultStore = useConsultStore();
 
 // 左侧一级导航栏选中索引
 const active = ref(0);
 
 // 定义数据响应式容器
 const list = ref<FirstDept[]>([]);
+
+// 二级科室数据是根据选中的一级科室数据计算而来
+const subDept = computed(() => {
+  if (!list.value[active.value]) return;
+  return list.value[active.value].child;
+});
 
 // 发起请求
 onMounted(async () => {
@@ -25,9 +34,13 @@ onMounted(async () => {
         <van-sidebar-item v-for="item in list" :title="item.name" :key="item.id" />
       </van-sidebar>
       <div class="sub-dept">
-        <router-link to="/consult/illness">科室一</router-link>
-        <router-link to="/consult/illness">科室二</router-link>
-        <router-link to="/consult/illness">科室三</router-link>
+        <router-link
+          to="/consult/illness"
+          @click="consultStore.setDept(sub.id)"
+          v-for="sub in subDept"
+          :key="sub.id"
+          >{{ sub.name }}</router-link
+        >
       </div>
     </div>
   </div>

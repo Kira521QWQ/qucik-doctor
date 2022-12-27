@@ -89,6 +89,8 @@ export type Consult = {
   type?: 1 | 2 | 3;
   // 快速问诊类型，0 普通 1 三甲
   illnessType?: 0 | 1;
+  // 选择的科室
+  depId?: string;
 };
 
 // 科室数据的类型

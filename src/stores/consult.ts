@@ -14,8 +14,12 @@ export const useConsultStore = defineStore(
     const setType = (type: 1 | 2 | 3) => {
       consult.value.type = type;
     };
+    // 设置快速问诊医院类型
+    const setIllnessType = (type: 0 | 1) => {
+      consult.value.illnessType = type;
+    };
 
-    return { consult, setType };
+    return { consult, setType, setIllnessType };
   },
   { persist: true }
 );

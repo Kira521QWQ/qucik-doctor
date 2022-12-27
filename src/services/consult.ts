@@ -24,3 +24,10 @@ export const getDoctorPage = async (params: PageParams) => {
   // 把数据返回给页面
   return res.data;
 };
+
+// 关注医生
+export const followDoctor = async (id: string) => {
+  // 发起请求
+  const res = await request.post('/like', { id, type: 'doc' });
+  return res.data;
+};

@@ -65,12 +65,26 @@ const onAfterRead: UploaderAfterRead = (item) => {
 const onDeleteImg = (item: UploaderFileListItem) => {
   console.log('图片删除成功，vant组件库调用的', item);
   // 删除我们自己维护图片数据
-  form.value.pictures = form.value.pictures?.filter((pic) => pic.url !== item.url);
+  // ['123', '456', '789'] 删除的是 '123'
+  // 1
+  // forEach 循环法
+  // const arr: { id: string; url: string }[] = [];
+  // form.value.pictures?.forEach((pic) => {
+  //   if (pic.url !== item.url) {
+  //     arr.push(pic);
+  //   }
+  // });
+  // form.value.pictures = arr;
+  // 2
+  form.value.pictures = form.value.pictures?.filter((pic) => !(pic.url === item.url));
+  // 3
+  // form.value.pictures = form.value.pictures?.filter((pic) => pic.url !== item.url);
 };
 </script>
 
 <template>
   <div class="consult-illness-page">
+    <input type="file" />
     <CpNavBar title="图文问诊" />
     <!-- 医生提示 -->
     <div class="illness-tip van-hairline--bottom">

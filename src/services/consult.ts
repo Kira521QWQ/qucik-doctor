@@ -58,6 +58,7 @@ export const uploadImage = async (file: File) => {
   // 组装一个文件传送对象
   const fd = new FormData();
   // 追加我们要上传的图片, append 的第一个参数是服务器API定的
+  // {} => {name: 'Rose'}
   fd.append('file', file);
   const res = await request.post<{ id: string; url: string }, Data<{ id: string; url: string }>>(
     '/upload',

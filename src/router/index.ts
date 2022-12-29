@@ -69,6 +69,11 @@ const router = createRouter({
       meta: { title: '病情描述' },
     },
     {
+      path: '/consult/patient',
+      component: () => import('@/views/Consult/ConsultPatient.vue'),
+      meta: { title: '选择患者' },
+    },
+    {
       path: '/test',
       component: () => import('@/views/Test/TestPage.vue'),
       meta: { title: '测试玩' },

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { uploadImage } from '@/services/consult';
 import type { ConsultIllness } from '@/types/consult';
 import type { UploaderAfterRead, UploaderFileListItem } from 'vant/lib/uploader/types';
-import { Toast } from 'vant';
+import { Dialog, Toast } from 'vant';
 import { useConsultStore } from '@/stores/consult';
 import { useRouter } from 'vue-router';
 
@@ -36,7 +36,7 @@ const form = ref<ConsultIllness>({
   pictures: [],
 });
 
-const fileList = ref([]);
+const fileList = ref<{ id: string; url: string }[]>([]);
 
 // 图片读取成功回调
 const onAfterRead: UploaderAfterRead = (item) => {
@@ -96,6 +96,11 @@ const enabled = computed(() => {
   );
 });
 
+// 如果用watch
+// 1 定义一个响应式变量
+// 2 watch里监听变化后的值
+// 3 开启页面渲染完毕，立即执行 watch
+
 const disabled = computed(() => {
   // return (
   //   !form.value.illnessDesc ||
@@ -136,6 +141,30 @@ const next = () => {
   // 路由跳转
   router.push('/consult/patient');
 };
+
+onMounted(() => {
+  // 判断有没有要回显的数据
+  if (consultStore.consult.illnessDesc) {
+    console.log('??????');
+    // 询问用户是否要回显数据
+    Dialog.confirm({
+      title: '温馨提示',
+      message: '是否恢复您之前填写的病情信息呢？',
+      confirmButtonColor: 'var(--cp-primary)',
+      closeOnPopstate: false,
+    }).then(() => {
+      console.log('确定', '准备回显数据');
+      const { illnessDesc, illnessTime, consultFlag, pictures } = consultStore.consult;
+      form.value = { illnessDesc, illnessTime, consultFlag, pictures };
+      // 图片组件数据回显
+      if (pictures) {
+        fileList.value = pictures;
+      }
+      // 这个和上面等价
+      // fileList.value = pictures || []
+    });
+  }
+});
 </script>
 
 <template>

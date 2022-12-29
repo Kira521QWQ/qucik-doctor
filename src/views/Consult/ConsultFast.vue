@@ -3,11 +3,15 @@ import { useConsultStore } from '@/stores/consult';
 
 // 创建store实例
 const consultStore = useConsultStore();
+
+const xxx = (event: any) => {
+  console.dir(event);
+};
 </script>
 
 <template>
   <div class="consult-fast-page">
-    <CpNavBar title="极速问诊" right-text="问诊记录" />
+    <CpNavBar title="极速问诊" right-text="问诊记录" :back="xxx" />
     <div class="fast-logo">
       <img class="img" src="@/assets/consult-fast.png" alt="" />
       <p class="text"><span>20s</span> 快速匹配专业医生</p>

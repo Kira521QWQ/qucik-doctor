@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { uploadImage } from '@/services/consult';
 import type { ConsultIllness } from '@/types/consult';
-import type { UploaderAfterRead } from 'vant/lib/uploader/types';
+import type { UploaderAfterRead, UploaderFileListItem } from 'vant/lib/uploader/types';
 
 // 病情事件
 const timeOptions = [
@@ -62,8 +62,10 @@ const onAfterRead: UploaderAfterRead = (item) => {
     });
 };
 // 删除图片回调
-const onDeleteImg = () => {
-  console.log('图片删除成功');
+const onDeleteImg = (item: UploaderFileListItem) => {
+  console.log('图片删除成功，vant组件库调用的', item);
+  // 删除我们自己维护图片数据
+  form.value.pictures = form.value.pictures?.filter((pic) => pic.url !== item.url);
 };
 </script>
 

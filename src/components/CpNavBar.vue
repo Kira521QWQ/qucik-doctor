@@ -1,16 +1,19 @@
 <script setup lang="ts">
 // 导入 vue-router 的组合式 api: useRouter 函数
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 // 获取路由实例
 const router = useRouter();
+
+const img = ref(null);
 
 // 封装数据
 const props = defineProps<{
   title?: string;
   rightText?: string;
   // 还可以传递函数
-  back?: (xxx: string) => void;
+  back?: (xxx: any) => void;
 }>();
 
 // 封装事件，把导航栏右侧按钮的点击事件暴露给父组件
@@ -30,7 +33,9 @@ const onClickLeft = () => {
   // 判断是否传递了函数
   if (props.back) {
     // 如果传了函数，则执行父组件传递的函数
-    props.back('xxx');
+    // props.back('导航组件内部处理了一些事情，给你传些数据');
+    props.back(img.value);
+
     return;
   }
   // 返回上一层路由
@@ -38,6 +43,7 @@ const onClickLeft = () => {
 };
 </script>
 <template>
+  <!-- <input ref="img" /> -->
   <van-nav-bar
     left-arrow
     :title="title"

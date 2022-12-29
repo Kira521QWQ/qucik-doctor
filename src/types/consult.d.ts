@@ -91,6 +91,14 @@ export type Consult = {
   illnessType?: 0 | 1;
   // 选择的科室
   depId?: string;
+  // 病情文字描述
+  illnessDesc?: string;
+  // 症状持续时间
+  illnessTime?: 1 | 2 | 3 | 4;
+  // 之前是否就诊过
+  consultFlag?: 0 | 1;
+  // 症状图片描述
+  pictures?: { id: string; url: string }[];
 };
 
 // 科室数据的类型

@@ -46,6 +46,8 @@ const onClickLeft = () => {
   <!-- <input ref="img" /> -->
   <van-nav-bar
     left-arrow
+    fixed
+    placeholder
     :title="title"
     :right-text="rightText"
     @click-left="onClickLeft"

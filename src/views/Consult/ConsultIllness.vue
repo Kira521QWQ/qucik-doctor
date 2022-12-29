@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { uploadImage } from '@/services/consult';
 import type { ConsultIllness } from '@/types/consult';
 import type { UploaderAfterRead, UploaderFileListItem } from 'vant/lib/uploader/types';
+import { Toast } from 'vant';
+import { useConsultStore } from '@/stores/consult';
+import { useRouter } from 'vue-router';
+
+const consultStore = useConsultStore();
+const router = useRouter();
 
 // 病情事件
 const timeOptions = [
@@ -80,11 +86,61 @@ const onDeleteImg = (item: UploaderFileListItem) => {
   // 3
   // form.value.pictures = form.value.pictures?.filter((pic) => pic.url !== item.url);
 };
+
+// 下一步是否激活的计算属性
+const enabled = computed(() => {
+  return (
+    form.value.illnessDesc &&
+    form.value.illnessTime !== undefined &&
+    form.value.consultFlag !== undefined
+  );
+});
+
+const disabled = computed(() => {
+  // return (
+  //   !form.value.illnessDesc ||
+  //   form.value.illnessTime === undefined ||
+  //   form.value.consultFlag === undefined
+  // );
+  // 这个和上面等价
+  if (
+    !form.value.illnessDesc ||
+    form.value.illnessTime === undefined ||
+    form.value.consultFlag === undefined
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+// 点击下一步判断用户输入
+const next = () => {
+  // TODO 这里判断是否启动、禁用
+
+  // 1 病情描述输入判断
+  // if (!form.value.illnessDesc) return Toast('请输入病情描述');
+  // 上面的代码和下面的代码等价
+  if (!form.value.illnessDesc) {
+    let result = Toast('请输入病情描述');
+    return result;
+  }
+  // 2 患病时间
+  if (form.value.illnessTime === undefined) return Toast('请选择患病时间');
+  // 3 是否就诊
+  if (form.value.consultFlag === undefined) return Toast('请选择是否就诊');
+
+  console.log('保存数据到 store');
+  consultStore.setIllness(form.value);
+
+  // 路由跳转
+  // router.push('/consult/patient');
+};
 </script>
 
 <template>
   <div class="consult-illness-page">
-    <input type="file" />
+    <!-- <input type="file" /> -->
     <CpNavBar title="图文问诊" />
     <!-- 医生提示 -->
     <div class="illness-tip van-hairline--bottom">
@@ -118,7 +174,7 @@ const onDeleteImg = (item: UploaderFileListItem) => {
         upload-icon="photo-o"
         upload-text="上传图片"
         :max-size="5 * 1024 * 1024"
-        max-count="3"
+        max-count="9"
         :multiple="false"
         :after-read="onAfterRead"
         @delete="onDeleteImg"
@@ -126,6 +182,11 @@ const onDeleteImg = (item: UploaderFileListItem) => {
       >
       </van-uploader>
       <p class="tip" v-if="fileList.length === 0">上传内容仅医生可见,最多9张图,最大5MB</p>
+    </div>
+    <!-- 下一步 -->
+    <div style="padding: 0px 15px" @click="next">
+      <!-- <van-button :class="{ disabled: !enabled }" type="primary" block round>下一步</van-button> -->
+      <van-button :class="{ disabled: disabled }" type="primary" block round>下一步</van-button>
     </div>
   </div>
 </template>
@@ -225,6 +286,17 @@ const onDeleteImg = (item: UploaderFileListItem) => {
           color: var(--cp-text3);
         }
       }
+    }
+  }
+
+  // 下一步
+  .van-button {
+    font-size: 16px;
+    &.disabled {
+      opacity: 1;
+      background: #fafafa;
+      color: #d9dbde;
+      border: #fafafa;
     }
   }
 }

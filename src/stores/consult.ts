@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Consult } from '@/types/consult';
+import type { Consult, ConsultIllness } from '@/types/consult';
 
 // 导出极速问诊store
 export const useConsultStore = defineStore(
@@ -22,8 +22,15 @@ export const useConsultStore = defineStore(
     const setDept = (id: string) => {
       consult.value.depId = id;
     };
+    // 设置病情描述
+    const setIllness = (illness: ConsultIllness) => {
+      consult.value.illnessDesc = illness.illnessDesc;
+      consult.value.illnessTime = illness.illnessTime;
+      consult.value.consultFlag = illness.consultFlag;
+      consult.value.pictures = illness.pictures;
+    };
 
-    return { consult, setType, setIllnessType, setDept };
+    return { consult, setType, setIllnessType, setDept, setIllness };
   },
   { persist: true }
 );

@@ -27,6 +27,17 @@ const form = ref<ConsultIllness>({
   // 病情描述图片
   pictures: [],
 });
+
+const fileList = ref([]);
+
+// 图片读取成功回调
+const onAfterRead = () => {
+  console.log('图片读取成功');
+};
+// 删除图片回调
+const onDeleteImg = () => {
+  console.log('图片删除成功');
+};
 </script>
 
 <template>
@@ -57,6 +68,21 @@ const form = ref<ConsultIllness>({
         <p>此次病情是否去医院就诊过？</p>
         <CpRadioBtn :options="flagOptions" v-model="form.consultFlag" />
       </div>
+    </div>
+    <div class="illness-img">
+      <!-- 属性传递函数的用法：:after-read="onAfterRead" -->
+      <van-uploader
+        upload-icon="photo-o"
+        upload-text="上传图片"
+        :max-size="5 * 1024 * 1024"
+        max-count="3"
+        :multiple="false"
+        :after-read="onAfterRead"
+        @delete="onDeleteImg"
+        v-model="fileList"
+      >
+      </van-uploader>
+      <p class="tip" v-if="fileList.length === 0">上传内容仅医生可见,最多9张图,最大5MB</p>
     </div>
   </div>
 </template>
@@ -115,6 +141,46 @@ const form = ref<ConsultIllness>({
       > p {
         color: var(--cp-text3);
         padding: 15px 0;
+      }
+    }
+  }
+
+  .illness-img {
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    .tip {
+      font-size: 12px;
+      color: var(--cp-tip);
+    }
+    ::v-deep() {
+      .van-uploader {
+        &__preview {
+          &-delete {
+            left: -6px;
+            top: -6px;
+            border-radius: 50%;
+            background-color: var(--cp-primary);
+            width: 20px;
+            height: 20px;
+            &-icon {
+              transform: scale(0.9) translate(-22%, 22%);
+            }
+          }
+          &-image {
+            border-radius: 8px;
+            overflow: hidden;
+          }
+        }
+        &__upload {
+          border-radius: 8px;
+        }
+        &__upload-icon {
+          color: var(--cp-text3);
+        }
       }
     }
   }

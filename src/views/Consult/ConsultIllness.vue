@@ -134,7 +134,7 @@ const next = () => {
   consultStore.setIllness(form.value);
 
   // 路由跳转
-  // router.push('/consult/patient');
+  router.push('/consult/patient');
 };
 </script>
 

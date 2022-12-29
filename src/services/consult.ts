@@ -51,3 +51,17 @@ export const getAllDept = async () => {
   const res = await request.get<FirstDept[], Data<FirstDept[]>>('/dep/all');
   return res.data;
 };
+
+// 上传图片
+export const uploadImage = async (file: File) => {
+  // 类似于这个 {name: 'Rose'}
+  // 组装一个文件传送对象
+  const fd = new FormData();
+  // 追加我们要上传的图片, append 的第一个参数是服务器API定的
+  fd.append('file', file);
+  const res = await request.post<{ id: string; url: string }, Data<{ id: string; url: string }>>(
+    '/upload',
+    fd
+  );
+  return res.data;
+};

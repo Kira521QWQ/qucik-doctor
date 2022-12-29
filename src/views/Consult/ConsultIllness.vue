@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { uploadImage } from '@/services/consult';
 import type { ConsultIllness } from '@/types/consult';
+import type { UploaderAfterRead } from 'vant/lib/uploader/types';
 
 // 病情事件
 const timeOptions = [
@@ -31,8 +33,33 @@ const form = ref<ConsultIllness>({
 const fileList = ref([]);
 
 // 图片读取成功回调
-const onAfterRead = () => {
-  console.log('图片读取成功');
+const onAfterRead: UploaderAfterRead = (item) => {
+  console.log('图片读取成功', item);
+  // 类型收缩处理
+  // 1、排除 item 是数组
+  if (Array.isArray(item)) return;
+  // 2、排除浏览器读取图片失败的情况
+  if (!item.file) return;
+  // 设置图片的显示状态
+  item.status = 'uploading';
+  item.message = '上传中';
+  // 开始上传
+  uploadImage(item.file)
+    .then((res) => {
+      console.log('上传成功', res);
+      // 设置上传组件状态
+      item.status = 'done';
+      item.message = '上传成功';
+      // 图片的地址，还要放到我们维护的form响应数据中
+      form.value.pictures?.push(res);
+      // 添加 url 属性到item上
+      item.url = res.url;
+    })
+    .catch((err) => {
+      item.status = 'failed';
+      item.message = '图片上传失败';
+      console.log('上传失败', err);
+    });
 };
 // 删除图片回调
 const onDeleteImg = () => {

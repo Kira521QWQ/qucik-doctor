@@ -3,6 +3,11 @@ import type { PatientList, Patient } from '@/types/user';
 import { getPatientList, addPatient, editPatient, delPatient } from '@/services/user';
 import { ref, onMounted } from 'vue';
 import { Dialog, Toast } from 'vant';
+import { useConsultStore } from '@/stores/consult';
+import { useRouter } from 'vue-router';
+
+const consultStore = useConsultStore();
+const router = useRouter();
 
 // 患者信息的工具对象
 const initPatient: Patient = {
@@ -143,13 +148,22 @@ const remove = async () => {
 
 // 选中患者的id
 const patientId = ref('');
-
 // 选中患者事件处理，设置 patientId
 const selectePatient = (item: Patient) => {
   // 类型收缩
   if (item.id) {
     patientId.value = item.id;
   }
+};
+
+// 下一步事件处理函数
+const next = () => {
+  // 判断是否选择了患者
+  if (!patientId.value) return Toast('请选择患者');
+  // 保存到 store
+  consultStore.setPatient(patientId.value);
+  // 跳转路由
+  router.push('/consult/pay');
 };
 
 onMounted(() => {
@@ -235,7 +249,7 @@ onMounted(() => {
       </van-action-bar>
     </van-popup>
     <!-- 底部按钮 -->
-    <div class="patient-next">
+    <div class="patient-next" @click="next">
       <van-button type="primary" round block>下一步</van-button>
     </div>
   </div>

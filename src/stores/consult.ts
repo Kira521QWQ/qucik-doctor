@@ -29,8 +29,12 @@ export const useConsultStore = defineStore(
       consult.value.consultFlag = illness.consultFlag;
       consult.value.pictures = illness.pictures;
     };
+    // 设置患者id
+    const setPatient = (patientId: string) => {
+      consult.value.patientId = patientId;
+    };
 
-    return { consult, setType, setIllnessType, setDept, setIllness };
+    return { consult, setType, setIllnessType, setDept, setIllness, setPatient };
   },
   { persist: true }
 );

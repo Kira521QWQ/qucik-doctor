@@ -11,6 +11,7 @@ import type {
   PageParams,
   DoctorPage,
   FirstDept,
+  ConsultOrderPreData,
 } from '@/types/consult';
 
 // 获取文章列表网络请求
@@ -63,6 +64,16 @@ export const uploadImage = async (file: File) => {
   const res = await request.post<{ id: string; url: string }, Data<{ id: string; url: string }>>(
     '/upload',
     fd
+  );
+  return res.data;
+};
+
+// 订单支付准备
+export const getConsultOrderPre = async (type: 1 | 2 | 3, illnessType: 0 | 1) => {
+  // 发起请求
+  const res = await request.get<ConsultOrderPreData, Data<ConsultOrderPreData>>(
+    '/patient/consult/order/pre',
+    { params: { type, illnessType } }
   );
   return res.data;
 };

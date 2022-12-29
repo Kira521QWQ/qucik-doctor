@@ -99,6 +99,8 @@ export type Consult = {
   consultFlag?: 0 | 1;
   // 症状图片描述
   pictures?: { id: string; url: string }[];
+  // 患者id
+  patientId?: string;
 };
 
 // 科室数据的类型
@@ -130,4 +132,19 @@ export type ConsultIllness = {
   consultFlag?: 0 | 1;
   // 病情描述图片
   pictures?: { id: string; url: string }[];
+};
+
+// 极速问诊订单准备返回数据类型
+// 问诊订单预支付信息
+export type ConsultOrderPreData = {
+  // 积分抵扣
+  pointDeduction: number;
+  // 优惠券抵扣
+  couponDeduction: number;
+  // 优惠券ID
+  couponId: string;
+  // 需付款
+  payment: number;
+  // 实付款
+  actualPayment: number;
 };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { getConsultOrderPre } from '@/services/consult';
 import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
@@ -7,6 +7,8 @@ import { Toast } from 'vant';
 
 const consultStore = useConsultStore();
 
+// 支付信息
+const payInfo = ref<ConsultOrderPreData>();
 // 获取订单准备数据方法
 const loadPayInfo = async () => {
   // 类型收缩
@@ -16,6 +18,7 @@ const loadPayInfo = async () => {
   // 发请求
   const res = await getConsultOrderPre(consultStore.consult.type, consultStore.consult.illnessType);
   console.log('订单准备res', res);
+  payInfo.value = res;
 };
 
 onMounted(() => {
@@ -24,11 +27,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="consult-pay">
+  <div class="consult-pay" v-if="payInfo">
     <CpNavBar title="支付" />
     <!-- 支付信息 -->
     <div class="pay-info">
-      <p class="tit">图文问诊 49 元</p>
+      <p class="tit">图文问诊 {{ payInfo.payment }} 元</p>
       <img class="img" src="@/assets/avatar-doctor.svg" />
       <p class="desc">
         <span>极速问诊</span>
@@ -37,9 +40,9 @@ onMounted(() => {
     </div>
     <!-- 优惠券信息 -->
     <van-cell-group>
-      <van-cell title="优惠券" value="-¥10.00" />
-      <van-cell title="积分抵扣" value="-¥10.00" />
-      <van-cell title="实付款" value="¥29.00" class="pay-price" />
+      <van-cell title="优惠券" :value="`-¥${payInfo.couponDeduction}`" />
+      <van-cell title="积分抵扣" :value="'-¥' + payInfo.pointDeduction" />
+      <van-cell title="实付款" :value="`-¥${payInfo.actualPayment}`" class="pay-price" />
     </van-cell-group>
     <div class="pay-space"></div>
 
@@ -53,7 +56,12 @@ onMounted(() => {
     </div>
 
     <!-- 底部支付栏 -->
-    <van-submit-bar button-type="primary" :price="2900" button-text="立即支付" text-align="left" />
+    <van-submit-bar
+      button-type="primary"
+      :price="payInfo.actualPayment * 100"
+      button-text="立即支付"
+      text-align="left"
+    />
   </div>
 </template>
 

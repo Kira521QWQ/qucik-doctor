@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import { getConsultOrderPre, createConsultOrder } from '@/services/consult';
+import { getConsultOrderPre, createConsultOrder, getConsultOrderPayUrl } from '@/services/consult';
 import { getPatient } from '@/services/user';
 import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
@@ -117,10 +117,27 @@ onBeforeRouteLeave(() => {
   // 处理之后返回 true 可以跳转 false 不可以跳转
   // 如果有订单就别走
   if (orderId.value) {
-    console.log('拦截');
+    console.log('返回被拦截');
     return false;
   }
 });
+
+// 支付
+const pay = async () => {
+  if (paymentMethod.value === undefined) return Toast('请选择支付方式');
+
+  Toast.loading('跳转支付');
+
+  const res = await getConsultOrderPayUrl({
+    paymentMethod: paymentMethod.value,
+    orderId: orderId.value,
+    payCallback: 'http://127.0.0.1:5173/room',
+  });
+
+  console.log('第三发支付地址', res.payUrl);
+  // 设置当前浏览器地址
+  window.location.href = res.payUrl;
+};
 
 onMounted(() => {
   // 预支付信息
@@ -196,7 +213,7 @@ onMounted(() => {
           </van-cell>
         </van-cell-group>
         <div class="btn">
-          <van-button type="primary" round block>立即支付</van-button>
+          <van-button type="primary" round block @click="pay">立即支付</van-button>
         </div>
       </div>
     </van-action-sheet>

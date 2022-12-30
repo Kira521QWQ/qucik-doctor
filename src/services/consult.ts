@@ -88,3 +88,17 @@ export const createConsultOrder = async (data: Consult) => {
   );
   return res.data;
 };
+
+// 获取第三方支付地址
+export const getConsultOrderPayUrl = async (data: {
+  paymentMethod: 0 | 1;
+  orderId: string;
+  payCallback: string;
+}) => {
+  // 发起请求
+  const res = await request.post<{ payUrl: string }, Data<{ payUrl: string }>>(
+    '/patient/consult/pay',
+    data
+  );
+  return res.data;
+};

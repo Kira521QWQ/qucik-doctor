@@ -41,6 +41,21 @@ const patientValue = computed(() => {
   return patient.value?.name + ' | ' + patient.value?.genderValue + ' | ' + patient.value?.age;
 });
 
+// 底部支付显示
+const show = ref(false);
+// 用户是否选择同意支付
+const agree = ref(false);
+// 支付类型
+const paymentMethod = ref<0 | 1>();
+
+const submit = () => {
+  // 1、判断用户是否同意
+  if (!agree.value) return Toast('请同意支付协议');
+
+  // 2、控制支付选项的显示
+  show.value = true;
+};
+
 onMounted(() => {
   // 预支付信息
   loadPayInfo();
@@ -77,10 +92,10 @@ onMounted(() => {
       ></van-cell> -->
       <!-- 用计算属性 -->
       <van-cell title="患者信息" :value="patientValue"></van-cell>
-      <van-cell title="病情描述" label="头痛，头晕，恶心"></van-cell>
+      <van-cell title="病情描述" :label="consultStore.consult.illnessDesc"></van-cell>
     </van-cell-group>
     <div class="pay-schema">
-      <van-checkbox>我已同意 <span class="text">支付协议</span></van-checkbox>
+      <van-checkbox v-model="agree">我已同意 <span class="text">支付协议</span></van-checkbox>
     </div>
 
     <!-- 底部支付栏 -->
@@ -89,7 +104,28 @@ onMounted(() => {
       :price="payInfo.actualPayment * 100"
       button-text="立即支付"
       text-align="left"
+      @click="submit"
     />
+
+    <!-- 支付选项 -->
+    <van-action-sheet v-model:show="show" title="选择支付方式">
+      <div class="pay-type">
+        <p class="amount">¥ {{ payInfo.actualPayment.toFixed(2) }}</p>
+        <van-cell-group>
+          <van-cell title="微信支付" @click="paymentMethod = 0">
+            <template #icon><cp-icon name="consult-wechat" /></template>
+            <template #extra><van-checkbox :checked="paymentMethod === 0" /></template>
+          </van-cell>
+          <van-cell title="支付宝支付" @click="paymentMethod = 1">
+            <template #icon><cp-icon name="consult-alipay" /></template>
+            <template #extra><van-checkbox :checked="paymentMethod === 1" /></template>
+          </van-cell>
+        </van-cell-group>
+        <div class="btn">
+          <van-button type="primary" round block>立即支付</van-button>
+        </div>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -157,6 +193,29 @@ onMounted(() => {
     .van-submit-bar__button {
       font-weight: normal;
       width: 160px;
+    }
+  }
+
+  // 支付方式
+  .pay-type {
+    .amount {
+      padding: 20px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .btn {
+      padding: 15px;
+    }
+    .van-cell {
+      align-items: center;
+      .cp-icon {
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .van-checkbox :deep(.van-checkbox__icon) {
+        font-size: 16px;
+      }
     }
   }
 }

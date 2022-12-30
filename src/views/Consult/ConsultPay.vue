@@ -6,7 +6,9 @@ import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
 import { Dialog, Toast } from 'vant';
 import type { Patient } from '@/types/user';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
 
+const router = useRouter();
 const consultStore = useConsultStore();
 
 // 支付信息
@@ -98,13 +100,27 @@ const onClose = () => {
     })
     .catch((cancel) => {
       // 点击了左侧
-      console.log('左侧的cancel', '实际要调走');
+      // 用户强行要走
+      // 设置订单为空，否则 onBeforeRouteLeave 会一致拦截
+      orderId.value = '';
+      router.push('/user/consult');
+      console.log('左侧的cancel', '跳转页面');
       return true;
     });
 
   // 也可以用 async/await
   // return true/false
 };
+
+// 路由拦截
+onBeforeRouteLeave(() => {
+  // 处理之后返回 true 可以跳转 false 不可以跳转
+  // 如果有订单就别走
+  if (orderId.value) {
+    console.log('拦截');
+    return false;
+  }
+});
 
 onMounted(() => {
   // 预支付信息
@@ -165,6 +181,7 @@ onMounted(() => {
       :closeable="false"
       :close-on-click-overlay="true"
       :before-close="onClose"
+      :close-on-popstate="false"
     >
       <div class="pay-type">
         <p class="amount">¥ {{ payInfo.actualPayment.toFixed(2) }}</p>

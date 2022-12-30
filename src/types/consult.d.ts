@@ -101,6 +101,8 @@ export type Consult = {
   pictures?: { id: string; url: string }[];
   // 患者id
   patientId?: string;
+  // 优惠券id
+  couponId?: string;
 };
 
 // 科室数据的类型

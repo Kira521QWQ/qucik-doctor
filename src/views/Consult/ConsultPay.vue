@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { getConsultOrderPre } from '@/services/consult';
+import { getPatient } from '@/services/user';
 import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
 import { Toast } from 'vant';
+import type { Patient } from '@/types/user';
 
 const consultStore = useConsultStore();
 
@@ -18,11 +20,32 @@ const loadPayInfo = async () => {
   // 发请求
   const res = await getConsultOrderPre(consultStore.consult.type, consultStore.consult.illnessType);
   console.log('订单准备res', res);
+  // 赋值给页面
   payInfo.value = res;
+  // 保存到store
+  consultStore.setCoupon(payInfo.value.couponId);
 };
 
+//
+const patient = ref<Patient>();
+// 获取患者信息
+const loadPatient = async () => {
+  if (!consultStore.consult.patientId) return Toast('缺少患者id');
+  const res = await getPatient(consultStore.consult.patientId);
+  console.log('患者信息', res);
+  // 设置页面数据
+  patient.value = res;
+};
+
+const patientValue = computed(() => {
+  return patient.value?.name + ' | ' + patient.value?.genderValue + ' | ' + patient.value?.age;
+});
+
 onMounted(() => {
+  // 预支付信息
   loadPayInfo();
+  // 患者信息
+  loadPatient();
 });
 </script>
 
@@ -48,7 +71,12 @@ onMounted(() => {
 
     <!-- 患者信息 -->
     <van-cell-group>
-      <van-cell title="患者信息" value="李富贵 | 男 | 30岁"></van-cell>
+      <!-- <van-cell
+        title="患者信息"
+        :value="`${patient?.name} | ${patient?.genderValue} | ${patient?.age}岁`"
+      ></van-cell> -->
+      <!-- 用计算属性 -->
+      <van-cell title="患者信息" :value="patientValue"></van-cell>
       <van-cell title="病情描述" label="头痛，头晕，恶心"></van-cell>
     </van-cell-group>
     <div class="pay-schema">

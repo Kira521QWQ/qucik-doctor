@@ -62,9 +62,16 @@ export const editPatient = async (patient: Patient) => {
 };
 
 // 删除患者信息（家庭档案信息）
-export const delPatient = async (id: String) => {
+export const delPatient = async (id: string) => {
   // 发请求
   const res = await request.delete('/patient/del/' + id);
   // 返回给页面
+  return res.data;
+};
+
+// 获得患者信息
+export const getPatient = async (id: string) => {
+  // 发请求
+  const res = await request.get<Patient, Data<Patient>>(`/patient/info/${id}`);
   return res.data;
 };

@@ -47,17 +47,38 @@ const show = ref(false);
 const agree = ref(false);
 // 支付类型
 const paymentMethod = ref<0 | 1>();
+// 订单id
+const orderId = ref('');
+
+// 1、防抖，防止重复点击生成多个订单
+const loading = ref(false);
+
+// 2、订单成功后清空store信息，设置订单id
+// 3、异常处理
 
 const submit = async () => {
   // 1、判断用户是否同意
   if (!agree.value) return Toast('请同意支付协议');
+  // 生成订单的优化处理
 
-  // 生成订单
-  const res = await createConsultOrder(consultStore.consult);
-  console.log('生成订单结果', res);
-
-  // 2、控制支付选项的显示
-  show.value = true;
+  try {
+    // 生成订单
+    // 防抖状态设置（极限情况下还是可能生成多次点击）
+    loading.value = true;
+    const res = await createConsultOrder(consultStore.consult);
+    console.log('生成订单结果', res);
+    // 这里没有异常走的流程
+    loading.value = false;
+    // 设置订单数据
+    orderId.value = res.id;
+    // 清空store
+    // consultStore.clear();
+    // 控制支付选项的显示
+    show.value = true;
+  } catch (error) {
+    // 如果发生了异常支付按钮要回到正常状态
+    loading.value = false;
+  }
 };
 
 onMounted(() => {
@@ -106,6 +127,7 @@ onMounted(() => {
     <van-submit-bar
       button-type="primary"
       :price="payInfo.actualPayment * 100"
+      :loading="loading"
       button-text="立即支付"
       text-align="left"
       @click="submit"

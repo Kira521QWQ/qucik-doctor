@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import { getConsultOrderPre } from '@/services/consult';
+import { getConsultOrderPre, createConsultOrder } from '@/services/consult';
 import { getPatient } from '@/services/user';
 import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
@@ -48,9 +48,13 @@ const agree = ref(false);
 // 支付类型
 const paymentMethod = ref<0 | 1>();
 
-const submit = () => {
+const submit = async () => {
   // 1、判断用户是否同意
   if (!agree.value) return Toast('请同意支付协议');
+
+  // 生成订单
+  const res = await createConsultOrder(consultStore.consult);
+  console.log('生成订单结果', res);
 
   // 2、控制支付选项的显示
   show.value = true;

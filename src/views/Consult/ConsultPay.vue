@@ -4,7 +4,7 @@ import { getConsultOrderPre, createConsultOrder } from '@/services/consult';
 import { getPatient } from '@/services/user';
 import type { ConsultOrderPreData } from '@/types/consult';
 import { useConsultStore } from '@/stores/consult';
-import { Toast } from 'vant';
+import { Dialog, Toast } from 'vant';
 import type { Patient } from '@/types/user';
 
 const consultStore = useConsultStore();
@@ -49,21 +49,20 @@ const agree = ref(false);
 const paymentMethod = ref<0 | 1>();
 // 订单id
 const orderId = ref('');
-
-// 1、防抖，防止重复点击生成多个订单
+// 防抖，防止重复点击生成多个订单
 const loading = ref(false);
 
-// 2、订单成功后清空store信息，设置订单id
-// 3、异常处理
-
 const submit = async () => {
-  // 1、判断用户是否同意
+  // 判断用户是否同意
   if (!agree.value) return Toast('请同意支付协议');
-  // 生成订单的优化处理
 
+  // 生成订单的优化处理
   try {
     // 生成订单
     // 防抖状态设置（极限情况下还是可能生成多次点击）
+    if (loading.value) {
+      return;
+    }
     loading.value = true;
     const res = await createConsultOrder(consultStore.consult);
     console.log('生成订单结果', res);
@@ -71,14 +70,40 @@ const submit = async () => {
     loading.value = false;
     // 设置订单数据
     orderId.value = res.id;
-    // 清空store
+    // 订单成功后清空store信息
     // consultStore.clear();
     // 控制支付选项的显示
     show.value = true;
   } catch (error) {
+    // 异常处理
     // 如果发生了异常支付按钮要回到正常状态
     loading.value = false;
   }
+};
+
+// 支付方式消失前的回调
+const onClose = () => {
+  // 再次提示用户
+  return Dialog.confirm({
+    title: '关闭支付',
+    message: '取消支付将无法获得医生回复，医生接诊名额有限，是否确认关闭？',
+    cancelButtonText: '仍要关闭', // 左侧按钮
+    confirmButtonText: '继续支付', // 右侧按钮
+    confirmButtonColor: 'var(--cp-primary)',
+  })
+    .then((succ) => {
+      // 点击了右侧，不关闭
+      console.log('右侧的ok');
+      return false;
+    })
+    .catch((cancel) => {
+      // 点击了左侧
+      console.log('左侧的cancel', '实际要调走');
+      return true;
+    });
+
+  // 也可以用 async/await
+  // return true/false
 };
 
 onMounted(() => {
@@ -134,7 +159,13 @@ onMounted(() => {
     />
 
     <!-- 支付选项 -->
-    <van-action-sheet v-model:show="show" title="选择支付方式">
+    <van-action-sheet
+      v-model:show="show"
+      title="选择支付方式"
+      :closeable="false"
+      :close-on-click-overlay="true"
+      :before-close="onClose"
+    >
       <div class="pay-type">
         <p class="amount">¥ {{ payInfo.actualPayment.toFixed(2) }}</p>
         <van-cell-group>

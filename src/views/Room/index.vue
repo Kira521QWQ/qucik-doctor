@@ -70,8 +70,6 @@ onMounted(() => {
         list.value.unshift(...arr);
         console.log('list.value', list.value);
       });
-
-      console.log('处理后的默认消息', arr);
     }
   );
 });
@@ -87,7 +85,7 @@ onUnmounted(() => {
   <div class="room">
     <CpNavBar title="问诊室" />
     <RoomStatus />
-    <RoomMessage />
+    <RoomMessage :list="list" />
     <RoomAction />
   </div>
 </template>

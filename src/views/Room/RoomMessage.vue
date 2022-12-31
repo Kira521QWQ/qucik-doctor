@@ -20,10 +20,18 @@ const flagMap = {
 };
 
 // 图片预览函数
-const previewImage = (pics: { id: string; url: string }[]) => {
+const previewImage = (pics?: { id: string; url: string }[]) => {
   if (!pics || pics.length === 0) return;
   console.log(pics);
   ImagePreview(pics.map((item) => item.url));
+};
+
+const flagFn = (flag: any) => {
+  if (flag === 0) {
+    return '就诊过';
+  } else {
+    return '没就诊过';
+  }
 };
 </script>
 
@@ -45,7 +53,8 @@ const previewImage = (pics: { id: string; url: string }[]) => {
         </p>
         <p>
           {{ msg.consultRecord?.illnessTime && timeMap[msg.consultRecord?.illnessTime] }} |
-          {{ msg.consultRecord?.consultFlag && flagMap[msg.consultRecord?.consultFlag] }}
+          <!-- {{ msg.consultRecord?.consultFlag && flagMap[msg.consultRecord?.consultFlag] }} -->
+          {{ flagFn(msg.consultRecord?.consultFlag) }}
         </p>
       </div>
       <van-row>

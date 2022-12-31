@@ -92,3 +92,15 @@ export type Message = {
     evaluateDoc?: EvaluateDoc;
   };
 };
+
+// 消息分组列表
+export type TimeMessages = {
+  // 分组消息最早时间
+  createTime: string;
+  // 消息数组
+  items: Message[];
+  // 订单ID
+  orderId: string;
+  // 会话ID
+  sid: string;
+};

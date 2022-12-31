@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 // 导入 socket.io
 import { io, type Socket } from 'socket.io-client';
 import { baseURL } from '@/utils/request';
@@ -8,6 +8,9 @@ import { useRoute } from 'vue-router';
 import RoomStatus from './RoomStatus.vue';
 import RoomAction from './RoomAction.vue';
 import RoomMessage from './RoomMessage.vue';
+import type { Data } from '@/types/user';
+import type { TimeMessages, Message } from '@/types/room';
+import { MsgType } from '@/enums';
 
 // 创建 store 实例
 const userStore = useUserStore();
@@ -15,6 +18,9 @@ const userStore = useUserStore();
 const route = useRoute();
 // 创建 socket 对象变量
 let socket: Socket;
+
+// 消息列表数据变量
+const list = ref<Message[]>([]);
 
 // 在组件加载完毕后建立socket连接
 onMounted(() => {
@@ -28,6 +34,7 @@ onMounted(() => {
       orderId: route.query.orderId,
     },
   });
+  // 通用事件监听
   socket.on('connect', () => {
     console.log('socket 连接成功');
   });
@@ -37,6 +44,36 @@ onMounted(() => {
   socket.on('disconnect', () => {
     console.log('socket 断开连接');
   });
+
+  // 具体业务事件的监听
+  // socket.on('chatMsgList', (event: Data<TimeMessages[]>) => {
+  // socket.on('chatMsgList', ({ data }: { data: TimeMessages[] }) => {
+  socket.on(
+    'chatMsgList',
+    ({ data, code, message }: { data: TimeMessages[]; code: number; message: string }) => {
+      console.log('问诊室接通', data, code, message);
+      // 列表消息处理
+      const arr: Message[] = [];
+      data.forEach((item) => {
+        // 创建一个时间消息
+        const timeMsg = {
+          id: item.createTime,
+          createTime: item.createTime,
+          msgType: MsgType.Notify,
+          msg: {
+            content: item.createTime,
+          },
+        };
+
+        arr.push(timeMsg, ...item.items);
+        // 消息列表，数据的追加，只能是往前。
+        list.value.unshift(...arr);
+        console.log('list.value', list.value);
+      });
+
+      console.log('处理后的默认消息', arr);
+    }
+  );
 });
 
 // 组件卸载断开连接

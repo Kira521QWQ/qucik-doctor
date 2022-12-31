@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUnmounted, onMounted } from 'vue';
 import { useConsultStore } from '@/stores/consult';
 
 // 创建store实例
@@ -7,11 +8,19 @@ const consultStore = useConsultStore();
 const xxx = (event: any) => {
   console.dir(event);
 };
+
+onMounted(() => {
+  console.log('我加载完毕');
+});
+
+onUnmounted(() => {
+  console.log('我卸载了');
+});
 </script>
 
 <template>
   <div class="consult-fast-page">
-    <CpNavBar title="极速问诊" right-text="问诊记录" :back="xxx" />
+    <CpNavBar title="极速问诊" right-text="问诊记录" />
     <div class="fast-logo">
       <img class="img" src="@/assets/consult-fast.png" alt="" />
       <p class="text"><span>20s</span> 快速匹配专业医生</p>

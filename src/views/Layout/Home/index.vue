@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import type { KnowledgeType } from '@/types/consult';
 // 导入自定义组件
 import KnowledgeList from './KnowledgeList.vue';
@@ -17,6 +17,10 @@ const setConsultType = () => {
 
 // 选中的tab
 const active = ref<KnowledgeType>('like');
+
+// onUnmounted(() => {
+//   console.log('组件卸载了');
+// });
 </script>
 
 <template>

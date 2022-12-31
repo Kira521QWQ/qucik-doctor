@@ -1,7 +1,49 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+// 导入 socket.io
+import { io, type Socket } from 'socket.io-client';
+import { baseURL } from '@/utils/request';
+import { useUserStore } from '@/stores/user';
+import { useRoute } from 'vue-router';
 import RoomStatus from './RoomStatus.vue';
 import RoomAction from './RoomAction.vue';
 import RoomMessage from './RoomMessage.vue';
+
+// 创建 store 实例
+const userStore = useUserStore();
+// 创建route 实例
+const route = useRoute();
+// 创建 socket 对象变量
+let socket: Socket;
+
+// 在组件加载完毕后建立socket连接
+onMounted(() => {
+  socket = io(baseURL, {
+    auth: {
+      // 认证用户
+      token: `Bearer ${userStore.user?.token}`,
+    },
+    query: {
+      // 你和谁聊的天
+      orderId: route.query.orderId,
+    },
+  });
+  socket.on('connect', () => {
+    console.log('socket 连接成功');
+  });
+  socket.on('error', (error) => {
+    console.log('socket 发生错误', error);
+  });
+  socket.on('disconnect', () => {
+    console.log('socket 断开连接');
+  });
+});
+
+// 组件卸载断开连接
+onUnmounted(() => {
+  console.log('=========');
+  socket.close();
+});
 </script>
 
 <template>

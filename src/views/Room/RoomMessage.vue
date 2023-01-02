@@ -37,6 +37,11 @@ const flagFn = (flag: any) => {
     return '没就诊过';
   }
 };
+
+const formatTime = (time: string) => {
+  // 格式化处理日期
+  return time;
+};
 </script>
 
 <template>
@@ -80,7 +85,7 @@ const flagFn = (flag: any) => {
     <!-- 发送文字-我自己的消息 -->
     <div class="msg msg-to" v-if="msgType === MsgType.MsgText && userStore.user?.id === from">
       <div class="content">
-        <div class="time">{{ createTime }}</div>
+        <div class="time">{{ formatTime(createTime) }}</div>
         <div class="pao">{{ msg.content }}</div>
       </div>
       <!-- 用自己的头像 -->
@@ -94,7 +99,7 @@ const flagFn = (flag: any) => {
       <!-- 先用本地图片代替 -->
       <img style="width: 38px; height: 38px" src="@/assets/avatar-doctor.svg" />
       <div class="content">
-        <div class="time">{{ createTime }}</div>
+        <div class="time">{{ formatTime(createTime) }}</div>
         <div class="pao">{{ msg.content }}</div>
       </div>
     </div>

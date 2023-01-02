@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, nextTick } from 'vue';
 // 导入 socket.io
 import { io, type Socket } from 'socket.io-client';
 import { baseURL } from '@/utils/request';
@@ -85,10 +85,16 @@ onMounted(() => {
   });
 
   // 监听消息事件
-  socket.on('receiveChatMsg', (event: Message) => {
+  socket.on('receiveChatMsg', async (event: Message) => {
     console.log('客户端接收到的消息', event);
     // 设置到页面中
     list.value.push(event);
+
+    // 等待vue刷新完毕，之后你在刷新，你就用 nextTick。否则你的刷新就会被vue覆盖
+    await nextTick();
+    // 重置滚动条（移动窗口）
+    window.scrollTo(0, document.body.scrollHeight);
+    //  TODO 超级大的无限循环，让你的cpu，在这里停个1秒钟
   });
 });
 

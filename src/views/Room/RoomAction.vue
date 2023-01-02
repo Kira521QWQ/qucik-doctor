@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { UploaderAfterRead } from 'vant/lib/uploader/types';
 import { ref } from 'vue';
+import { uploadImage } from '@/services/consult';
+import { Toast } from 'vant';
 
 defineProps<{
   disabled?: boolean;
@@ -7,6 +10,7 @@ defineProps<{
 
 const emits = defineEmits<{
   (e: 'send-text', text: string): void;
+  (e: 'send-image', img: { id: string; url: string }): void;
 }>();
 
 // 聊天内容
@@ -17,6 +21,21 @@ const sendText = () => {
   emits('send-text', text.value);
   // 发送完毕后清空
   text.value = '';
+};
+
+// 聊天图片
+const sendImage: UploaderAfterRead = async (uploadResult) => {
+  // 类型收缩，排除错误情况
+  // 一次只能上传一张图片
+  if (Array.isArray(uploadResult)) return;
+  // 图片读取成功
+  if (!uploadResult.file) return;
+  // 上传图片
+  const t = Toast.loading('正在上传');
+  const res = await uploadImage(uploadResult.file);
+  t.clear();
+  // 传递给父组件图片数据
+  emits('send-image', res);
 };
 </script>
 
@@ -32,7 +51,7 @@ const sendText = () => {
       v-model="text"
       @keyup.enter="sendText"
     ></van-field>
-    <van-uploader :preview-image="false" :disabled="disabled">
+    <van-uploader :preview-image="false" :disabled="disabled" :after-read="sendImage">
       <cp-icon name="consult-img" />
     </van-uploader>
   </div>

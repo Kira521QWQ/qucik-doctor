@@ -90,11 +90,17 @@ onMounted(() => {
     // 设置到页面中
     list.value.push(event);
 
+    console.log('聊天list', list.value);
+
     // 等待vue刷新完毕，之后你在刷新，你就用 nextTick。否则你的刷新就会被vue覆盖
     await nextTick();
     // 重置滚动条（移动窗口）
     window.scrollTo(0, document.body.scrollHeight);
-    //  TODO 超级大的无限循环，让你的cpu，在这里停个1秒钟
+    // for (let i = 0; i < 200000000; i++) {
+    //   console.log(i);
+    // }
+    // TODO 超级大的无限循环，让你的cpu，在这里停个1秒钟
+    // 上面这种想法不对，因为当前for循环还在当前执行栈中 window.scrollTo 也是没有机会刷新的，反而会卡司浏览器
   });
 });
 
@@ -113,7 +119,7 @@ onMounted(async () => {
   consult.value = res;
 });
 
-// 发送聊天消息到服务器
+// 发送文字聊天消息到服务器
 const sendText = (text: string) => {
   console.log('要发送给服务器的聊天内容', text);
   // 使用websocket发送消息
@@ -126,6 +132,20 @@ const sendText = (text: string) => {
     },
   });
 };
+
+// 发送图片聊天消息到服务器
+const sendImage = (img: { id: string; url: string }) => {
+  console.log('要发送给服务器的聊天内容', img);
+  // 使用websocket发送消息
+  socket.emit('sendChatMsg', {
+    from: userStore.user?.id, // 谁发的
+    to: consult.value?.docInfo?.id, // 发给接诊的医生
+    msgType: MsgType.MsgImage, // 消息类型
+    msg: {
+      picture: img,
+    },
+  });
+};
 </script>
 
 <template>
@@ -133,7 +153,11 @@ const sendText = (text: string) => {
     <CpNavBar title="问诊室" />
     <RoomStatus :status="consult?.status" :countdown="consult?.countdown" />
     <RoomMessage :list="list" />
-    <RoomAction :disabled="consult?.status !== OrderType.ConsultChat" @send-text="sendText" />
+    <RoomAction
+      :disabled="consult?.status !== OrderType.ConsultChat"
+      @send-text="sendText"
+      @send-image="sendImage"
+    />
   </div>
 </template>
 

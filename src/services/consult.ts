@@ -13,6 +13,7 @@ import type {
   FirstDept,
   ConsultOrderPreData,
   Consult,
+  ConsultOrderItem,
 } from '@/types/consult';
 
 // 获取文章列表网络请求
@@ -100,5 +101,16 @@ export const getConsultOrderPayUrl = async (data: {
     '/patient/consult/pay',
     data
   );
+  return res.data;
+};
+
+// 获取问诊订单详情
+export const getConsultOrderDetail = async (id: string) => {
+  // 发起请求
+  const res = await request.get<ConsultOrderItem, Data<ConsultOrderItem>>(
+    '/patient/consult/order/detail',
+    { params: { orderId: id } }
+  );
+
   return res.data;
 };

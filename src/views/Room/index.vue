@@ -10,7 +10,9 @@ import RoomAction from './RoomAction.vue';
 import RoomMessage from './RoomMessage.vue';
 import type { Data } from '@/types/user';
 import type { TimeMessages, Message } from '@/types/room';
+import type { ConsultOrderItem } from '@/types/consult';
 import { MsgType } from '@/enums';
+import { getConsultOrderDetail } from '@/services/consult';
 
 // 创建 store 实例
 const userStore = useUserStore();
@@ -78,6 +80,15 @@ onMounted(() => {
 onUnmounted(() => {
   console.log('=========');
   socket.close();
+});
+
+// 获取订单详情
+const consult = ref<ConsultOrderItem>();
+onMounted(async () => {
+  // 发请求
+  const res = await getConsultOrderDetail(route.query.orderId as string);
+  console.log('页面订单详情', res);
+  consult.value = res;
 });
 </script>
 

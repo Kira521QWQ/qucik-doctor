@@ -121,6 +121,33 @@ const formatTime = (time: string) => {
         <van-image fit="contain" :src="msg.picture?.url" />
       </div>
     </div>
+
+    <!-- 处方消息 -->
+    <div class="msg msg-recipe" v-if="msgType === MsgType.CardPre">
+      <div class="content">
+        <div class="head van-hairline--bottom">
+          <div class="head-tit">
+            <h3>电子处方</h3>
+            <p>原始处方 <van-icon name="arrow"></van-icon></p>
+          </div>
+          <p>
+            {{ msg.prescription?.name }} {{ msg.prescription?.genderValue }}
+            {{ msg.prescription?.age }}岁 {{ msg.prescription?.diagnosis }}
+          </p>
+          <p>开方时间：{{ msg.prescription?.createTime }}</p>
+        </div>
+        <div class="body">
+          <div class="body-item" v-for="item in msg.prescription?.medicines" :key="item.id">
+            <div class="durg">
+              <p>{{ item.name }} {{ item.specs }}</p>
+              <p>{{ item.usageDosag }}</p>
+            </div>
+            <div class="num">x{{ item.quantity }}</div>
+          </div>
+        </div>
+        <div class="foot"><span>购买药品</span></div>
+      </div>
+    </div>
   </template>
 
   <!-- 通知 -->
@@ -130,37 +157,6 @@ const formatTime = (time: string) => {
     </div>
   </div> -->
 
-  <!-- 接收文字 -->
-  <!-- <div class="msg msg-from">
-    <van-image src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg" />
-    <div class="content">
-      <div class="time">20:12</div>
-      <div class="pao">哪里不舒服</div>
-    </div>
-  </div> -->
-  <!-- 处方消息 -->
-  <!-- <div class="msg msg-recipe">
-    <div class="content">
-      <div class="head van-hairline--bottom">
-        <div class="head-tit">
-          <h3>电子处方</h3>
-          <p>原始处方 <van-icon name="arrow"></van-icon></p>
-        </div>
-        <p>李富贵 男 31岁 血管性头痛</p>
-        <p>开方时间：2022-01-15 14:21:42</p>
-      </div>
-      <div class="body">
-        <div class="body-item" v-for="i in 2" :key="i">
-          <div class="durg">
-            <p>优赛明 维生素E乳</p>
-            <p>口服，每次1袋，每天3次，用药3天</p>
-          </div>
-          <div class="num">x1</div>
-        </div>
-      </div>
-      <div class="foot"><span>购买药品</span></div>
-    </div>
-  </div> -->
   <!-- 订单取消 -->
   <!-- <div class="msg msg-tip msg-tip-cancel">
     <div class="content">

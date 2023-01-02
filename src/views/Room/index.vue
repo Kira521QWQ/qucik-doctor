@@ -86,6 +86,8 @@ onMounted(() => {
       nextTick(() => {
         // 第一次加载完后滚，以后就不滚了。
         if (firstMsg.value) {
+          // 将我们收到的消息全部设置为已读，只需把最后一天设置为已读即可
+          socket.emit('updateMsgStatus', arr[arr.length - 1].id);
           window.scrollTo(0, document.body.scrollHeight);
           firstMsg.value = false;
         }
@@ -119,6 +121,8 @@ onMounted(() => {
     await nextTick();
     // 重置滚动条（移动窗口）
     window.scrollTo(0, document.body.scrollHeight);
+    // 更新已读
+    socket.emit('updateMsgStatus', event.id);
     // for (let i = 0; i < 200000000; i++) {
     //   console.log(i);
     // }

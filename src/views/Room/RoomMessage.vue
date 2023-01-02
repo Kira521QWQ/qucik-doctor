@@ -3,6 +3,7 @@ import { MsgType } from '@/enums';
 import { ImagePreview } from 'vant';
 import type { Message } from '@/types/room';
 import { useUserStore } from '@/stores/user';
+import { getPrescriptionPic } from '@/services/consult';
 
 // userStore 实例
 const userStore = useUserStore();
@@ -41,6 +42,18 @@ const flagFn = (flag: any) => {
 const formatTime = (time: string) => {
   // 格式化处理日期
   return time;
+};
+
+// 获取原始处方图片
+const showPrescription = async (id?: string) => {
+  if (id) {
+    const res = await getPrescriptionPic(id);
+    console.log(res);
+    ImagePreview([res.url]);
+  } else {
+    // 第三方库会异常分析统计
+    console.log('业务异常,给我们的服务器发消息，统计');
+  }
 };
 </script>
 
@@ -128,7 +141,9 @@ const formatTime = (time: string) => {
         <div class="head van-hairline--bottom">
           <div class="head-tit">
             <h3>电子处方</h3>
-            <p>原始处方 <van-icon name="arrow"></van-icon></p>
+            <p @click="showPrescription(msg.prescription?.id)">
+              原始处方 <van-icon name="arrow"></van-icon>
+            </p>
           </div>
           <p>
             {{ msg.prescription?.name }} {{ msg.prescription?.genderValue }}

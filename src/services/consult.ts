@@ -114,3 +114,12 @@ export const getConsultOrderDetail = async (id: string) => {
 
   return res.data;
 };
+
+// 获取处方预览图片地址
+export const getPrescriptionPic = async (id: string) => {
+  // 发起请求
+  const res = await request.get<{ url: string }, Data<{ url: string }>>(
+    `/patient/consult/prescription/${id}`
+  );
+  return res.data;
+};

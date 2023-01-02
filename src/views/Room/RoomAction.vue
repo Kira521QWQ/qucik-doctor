@@ -1,7 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 defineProps<{
   disabled?: boolean;
 }>();
+
+const emits = defineEmits<{
+  (e: 'send-text', text: string): void;
+}>();
+
+// 聊天内容
+const text = ref('');
+const sendText = () => {
+  // 回车后发送消息
+  console.log('回车后发送消息', text);
+  emits('send-text', text.value);
+  // 发送完毕后清空
+  text.value = '';
+};
 </script>
 
 <template>
@@ -13,6 +29,8 @@ defineProps<{
       :border="false"
       placeholder="问医生"
       autocomplete="off"
+      v-model="text"
+      @keyup.enter="sendText"
     ></van-field>
     <van-uploader :preview-image="false" :disabled="disabled">
       <cp-icon name="consult-img" />

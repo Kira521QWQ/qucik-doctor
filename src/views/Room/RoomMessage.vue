@@ -2,6 +2,10 @@
 import { MsgType } from '@/enums';
 import { ImagePreview } from 'vant';
 import type { Message } from '@/types/room';
+import { useUserStore } from '@/stores/user';
+
+// userStore 实例
+const userStore = useUserStore();
 
 defineProps<{
   list: Message[];
@@ -36,7 +40,7 @@ const flagFn = (flag: any) => {
 </script>
 
 <template>
-  <template v-for="{ id, msgType, msg } in list" :key="id">
+  <template v-for="{ id, msgType, msg, from, createTime, fromAvatar } in list" :key="id">
     <!-- 通知 -->
     <div class="msg msg-tip" v-if="msgType === MsgType.Notify">
       <div class="content">
@@ -70,6 +74,28 @@ const flagFn = (flag: any) => {
       <div class="content">
         <span class="green">温馨提示：</span>
         <span>{{ msg.content }}</span>
+      </div>
+    </div>
+
+    <!-- 发送文字-我自己的消息 -->
+    <div class="msg msg-to" v-if="msgType === MsgType.MsgText && userStore.user?.id === from">
+      <div class="content">
+        <div class="time">{{ createTime }}</div>
+        <div class="pao">{{ msg.content }}</div>
+      </div>
+      <!-- 用自己的头像 -->
+      <van-image :src="userStore.user?.avatar" />
+    </div>
+
+    <!-- 发送文字-接收到消息 -->
+    <div class="msg msg-from" v-if="msgType === MsgType.MsgText && userStore.user?.id !== from">
+      <!-- 服务器端目前返回数据有问题 -->
+      <!-- <van-image :src="fromAvatar" /> -->
+      <!-- 先用本地图片代替 -->
+      <img style="width: 38px; height: 38px" src="@/assets/avatar-doctor.svg" />
+      <div class="content">
+        <div class="time">{{ createTime }}</div>
+        <div class="pao">{{ msg.content }}</div>
       </div>
     </div>
   </template>

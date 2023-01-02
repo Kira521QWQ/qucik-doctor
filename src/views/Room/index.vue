@@ -13,6 +13,8 @@ import type { TimeMessages, Message } from '@/types/room';
 import type { ConsultOrderItem } from '@/types/consult';
 import { MsgType, OrderType } from '@/enums';
 import { getConsultOrderDetail } from '@/services/consult';
+// 导入时间处理库
+import dayjs from 'dayjs';
 
 // 创建 store 实例
 const userStore = useUserStore();
@@ -56,7 +58,10 @@ onMounted(() => {
       console.log('问诊室接通', data, code, message);
       // 列表消息处理
       const arr: Message[] = [];
-      data.forEach((item) => {
+      data.forEach((item, i) => {
+        if (i === 0) {
+          time.value = item.createTime;
+        }
         // 创建一个时间消息
         const timeMsg = {
           id: item.createTime,
@@ -68,10 +73,13 @@ onMounted(() => {
         };
 
         arr.push(timeMsg, ...item.items);
-        // 消息列表，数据的追加，只能是往前。
-        list.value.unshift(...arr);
-        console.log('list.value', list.value);
       });
+
+      // 消息列表，数据的追加，只能是往前。
+      list.value.unshift(...arr);
+      // 消息数据获取完毕后，设置下拉加载状态
+      loading.value = false;
+      console.log('list.value', list.value);
     }
   );
 
@@ -146,13 +154,28 @@ const sendImage = (img: { id: string; url: string }) => {
     },
   });
 };
+
+// 请求时间
+const time = ref(dayjs().format('YYYY-MM-DD HH:mm:ss'));
+const loading = ref(false);
+const onRefresh = () => {
+  console.log('下拉了,发请求了', loading);
+  // setTimeout(() => {
+  //   console.log('2秒后数据请求完毕');
+  //   loading.value = false;
+  // }, 2000);
+  // 使用 socket 获取历史聊天记录
+  socket.emit('getChatMsgList', 20, time.value, route.query.orderId);
+};
 </script>
 
 <template>
   <div class="room">
     <CpNavBar title="问诊室" />
     <RoomStatus :status="consult?.status" :countdown="consult?.countdown" />
-    <RoomMessage :list="list" />
+    <van-pull-refresh v-model="loading" @refresh="onRefresh">
+      <RoomMessage :list="list" />
+    </van-pull-refresh>
     <RoomAction
       :disabled="consult?.status !== OrderType.ConsultChat"
       @send-text="sendText"

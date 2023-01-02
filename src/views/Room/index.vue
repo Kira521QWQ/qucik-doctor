@@ -11,7 +11,7 @@ import RoomMessage from './RoomMessage.vue';
 import type { Data } from '@/types/user';
 import type { TimeMessages, Message } from '@/types/room';
 import type { ConsultOrderItem } from '@/types/consult';
-import { MsgType } from '@/enums';
+import { MsgType, OrderType } from '@/enums';
 import { getConsultOrderDetail } from '@/services/consult';
 
 // 创建 store 实例
@@ -74,6 +74,15 @@ onMounted(() => {
       });
     }
   );
+
+  // 订单状态变化事件
+  socket.on('statusChange', async (event) => {
+    console.log('statusChange', event);
+    // 重新获取订单详情
+    const res = await getConsultOrderDetail(route.query.orderId as string);
+    console.log('订单状态发生变化，订单详情', res);
+    consult.value = res;
+  });
 });
 
 // 组件卸载断开连接
@@ -95,9 +104,9 @@ onMounted(async () => {
 <template>
   <div class="room">
     <CpNavBar title="问诊室" />
-    <RoomStatus />
+    <RoomStatus :status="consult?.status" :countdown="consult?.countdown" />
     <RoomMessage :list="list" />
-    <RoomAction />
+    <RoomAction :disabled="consult?.status !== OrderType.ConsultChat" />
   </div>
 </template>
 

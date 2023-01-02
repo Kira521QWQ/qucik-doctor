@@ -15,6 +15,7 @@ import { MsgType, OrderType } from '@/enums';
 import { getConsultOrderDetail } from '@/services/consult';
 // 导入时间处理库
 import dayjs from 'dayjs';
+import { Toast } from 'vant';
 
 // 创建 store 实例
 const userStore = useUserStore();
@@ -80,6 +81,20 @@ onMounted(() => {
       // 消息数据获取完毕后，设置下拉加载状态
       loading.value = false;
       console.log('list.value', list.value);
+
+      // 列表加载完毕，滚动到底部
+      nextTick(() => {
+        // 第一次加载完后滚，以后就不滚了。
+        if (firstMsg.value) {
+          window.scrollTo(0, document.body.scrollHeight);
+          firstMsg.value = false;
+        }
+      });
+
+      // 消息加载完毕提示
+      if (data.length === 0) {
+        return Toast('没有更多历史聊天记录了');
+      }
     }
   );
 
@@ -155,8 +170,11 @@ const sendImage = (img: { id: string; url: string }) => {
   });
 };
 
+// 列表加载标志
+const firstMsg = ref(true);
 // 请求时间
 const time = ref(dayjs().format('YYYY-MM-DD HH:mm:ss'));
+// 下拉加载状态
 const loading = ref(false);
 const onRefresh = () => {
   console.log('下拉了,发请求了', loading);

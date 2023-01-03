@@ -89,6 +89,11 @@ const router = createRouter({
       },
     },
     {
+      path: '/user/consult',
+      component: () => import('@/views/Layout/User/ConsultPage.vue'),
+      meta: { title: '问诊室' },
+    },
+    {
       path: '/test',
       component: () => import('@/views/Test/TestPage.vue'),
       meta: { title: '测试玩' },

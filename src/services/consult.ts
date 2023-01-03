@@ -140,5 +140,6 @@ export const getConsultOrderList = async (params: ConsultOrderListParams) => {
 export const deleteOrder = async (id: string) => {
   // 发起delete请求
   const res = await request.delete(`/patient/order/${id}`);
+  console.log('删除结果1', res);
   return res.data;
 };

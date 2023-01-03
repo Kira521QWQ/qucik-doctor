@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue';
 import type { ConsultOrderItem } from '@/types/consult';
 import { OrderType } from '@/enums';
+import { deleteOrder } from '@/services/consult';
+import { Toast } from 'vant';
 
 // 接收类型
 const props = defineProps<{
@@ -16,8 +18,33 @@ const actions = computed(() => {
     { text: '删除订单', disabled: false },
   ];
 });
-const onSelect = (item: any, index: any) => {
-  console.log('点了', item, index);
+const onSelect = (action: { text: string; disabled?: boolean }, index: number) => {
+  console.log('点了', action, index);
+  // 更多，用户点击了删除
+  if (index === 1) {
+    deleteConsultOrder(props.item);
+  }
+};
+
+// 删除状态
+const deleteLoading = ref(false);
+// 删除订单的事件处理函数
+const deleteConsultOrder = async (item: ConsultOrderItem) => {
+  console.log(item);
+  if (item.id) {
+    // 删除服务器端订单
+    try {
+      deleteLoading.value = true;
+      const res = await deleteOrder(item.id);
+      console.log('删除结果2', res);
+      Toast('删除成功');
+    } catch (error) {
+      console.log(error);
+      Toast('删除失败');
+    } finally {
+      deleteLoading.value = false;
+    }
+  }
 };
 </script>
 
@@ -93,7 +120,16 @@ const onSelect = (item: any, index: any) => {
     </div>
     <!-- 已取消-为支付订单超时了 -->
     <div class="foot" v-if="item.status === OrderType.ConsultCancel">
-      <van-button class="gray" plain size="small" round> 删除订单 </van-button>
+      <van-button
+        class="gray"
+        @click="deleteConsultOrder(item)"
+        :loading="deleteLoading"
+        plain
+        size="small"
+        round
+      >
+        删除订单
+      </van-button>
       <van-button type="primary" plain size="small" round> 咨询其他医生 </van-button>
     </div>
   </div>

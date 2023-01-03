@@ -25,9 +25,15 @@ const onLoad = async () => {
   const res = await getConsultOrderList(params.value);
   console.log('订单列表数据', res);
   list.value.push(...res.rows);
+  //   console.log(typeof list.value[0], list.value[0]);
+  //   console.log(typeof res.rows[0], res.rows[0]);
+  //   console.log(list.value[0] === res.rows[0]);
   // 效果和上面一样
   //   list.value = [...list.value, ...res.rows];
-  console.log('list.value', list.value);
+  //   console.log('list.value', list.value);
+  //   console.log(list.value[0]);
+  //   console.log(typeof list.value[0]);
+
   // 判断列表是否还有更多数据
   if (params.value.current < res.pageTotal) {
     // 数据还没有请求完毕，页码增1

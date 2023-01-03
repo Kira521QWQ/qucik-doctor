@@ -35,9 +35,46 @@ defineProps<{
         <div class="body-value tip">{{ item.createTime }}</div>
       </div>
     </div>
-    <div class="foot">
+    <!-- 待支付 -->
+    <div class="foot" v-if="item.status === OrderType.ConsultPay">
       <van-button class="gray" plain size="small" round>取消问诊</van-button>
-      <van-button type="primary" plain size="small" round>去支付</van-button>
+      <van-button type="primary" plain size="small" round :to="`/user/consult/${item.id}`">
+        去支付
+      </van-button>
+    </div>
+    <!-- 待接诊 -->
+    <div class="foot" v-if="item.status === OrderType.ConsultWait">
+      <van-button class="gray" plain size="small" round>取消问诊</van-button>
+      <van-button type="primary" plain size="small" round :to="`/room/?orderId=${item.id}`">
+        继续沟通
+      </van-button>
+    </div>
+    <!-- 咨询中 -->
+    <div class="foot" v-if="item.status === OrderType.ConsultChat">
+      <van-button class="gray" plain size="small" round v-if="item.prescriptionId">
+        查看处方
+      </van-button>
+      <van-button type="primary" plain size="small" round :to="`/room/?orderId=${item.id}`">
+        继续沟通
+      </van-button>
+    </div>
+    <!-- 已完成 -->
+    <div class="foot" v-if="item.status === OrderType.ConsultComplete">
+      <div class="more">
+        <!-- TODO 更多 -->
+      </div>
+      <van-button class="gray" plain size="small" round :to="`/room/?orderId=${item.id}`">
+        问诊记录
+      </van-button>
+      <van-button type="primary" plain size="small" round v-if="item.evaluateId">
+        写评价
+      </van-button>
+      <van-button type="primary" plain size="small" round> 查看评价 </van-button>
+    </div>
+    <!-- 已取消-为支付订单超时了 -->
+    <div class="foot" v-if="item.status === OrderType.ConsultCancel">
+      <van-button class="gray" plain size="small" round> 删除订单 </van-button>
+      <van-button type="primary" plain size="small" round> 咨询其他医生 </van-button>
     </div>
   </div>
 </template>

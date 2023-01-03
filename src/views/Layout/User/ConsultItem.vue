@@ -1,11 +1,24 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import type { ConsultOrderItem } from '@/types/consult';
 import { OrderType } from '@/enums';
 
 // 接收类型
-defineProps<{
+const props = defineProps<{
   item: ConsultOrderItem;
 }>();
+
+// popover 显示
+const show = ref(false);
+const actions = computed(() => {
+  return [
+    { text: '查看处方', disabled: !props.item.prescriptionId },
+    { text: '删除订单', disabled: false },
+  ];
+});
+const onSelect = (item: any, index: any) => {
+  console.log('点了', item, index);
+};
 </script>
 
 <template>
@@ -61,7 +74,14 @@ defineProps<{
     <!-- 已完成 -->
     <div class="foot" v-if="item.status === OrderType.ConsultComplete">
       <div class="more">
-        <!-- TODO 更多 -->
+        <van-popover
+          placement="top-start"
+          v-model:show="show"
+          :actions="actions"
+          @select="onSelect"
+        >
+          <template #reference>更多</template>
+        </van-popover>
       </div>
       <van-button class="gray" plain size="small" round :to="`/room/?orderId=${item.id}`">
         问诊记录

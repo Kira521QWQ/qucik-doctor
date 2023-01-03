@@ -135,3 +135,10 @@ export const getConsultOrderList = async (params: ConsultOrderListParams) => {
   );
   return res.data;
 };
+
+// 删除订单
+export const deleteOrder = async (id: string) => {
+  // 发起delete请求
+  const res = await request.delete(`/patient/order/${id}`);
+  return res.data;
+};

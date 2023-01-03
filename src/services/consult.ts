@@ -14,6 +14,8 @@ import type {
   ConsultOrderPreData,
   Consult,
   ConsultOrderItem,
+  ConsultOrderListParams,
+  ConsultOrderPage,
 } from '@/types/consult';
 
 // 获取文章列表网络请求
@@ -120,6 +122,16 @@ export const getPrescriptionPic = async (id: string) => {
   // 发起请求
   const res = await request.get<{ url: string }, Data<{ url: string }>>(
     `/patient/consult/prescription/${id}`
+  );
+  return res.data;
+};
+
+// 获取订单列表
+export const getConsultOrderList = async (params: ConsultOrderListParams) => {
+  // 发起 get 请求
+  const res = await request.get<ConsultOrderPage, Data<ConsultOrderPage>>(
+    '/patient/consult/order/list',
+    { params }
   );
   return res.data;
 };

@@ -89,6 +89,7 @@ export type Consult = {
   // 将来这里会有很多类型
   // 问诊类型
   // 就诊类型1找医生 2极速问诊 3开药问诊默认是1
+  id?: string; // 订单id
   type?: 1 | 2 | 3;
   // 快速问诊类型，0 普通 1 三甲
   illnessType?: 0 | 1;
@@ -184,4 +185,24 @@ export type ConsultOrderItem = Consult & {
   pointDeduction: number;
   // 实付款
   actualPayment: number;
+};
+
+// 问诊记录接口查询参数类型
+export type ConsultOrderListParams = {
+  // 当前页码
+  current: number;
+  // 每页条数
+  pageSize: number;
+  // 问诊记录类型
+  type: 1 | 2 | 3;
+};
+
+// 问诊响应数据类型
+export type ConsultOrderPage = {
+  // 总页数
+  pageTotal: number;
+  // 总条数
+  total: number;
+  // 列表数据
+  rows: ConsultOrderItem[];
 };

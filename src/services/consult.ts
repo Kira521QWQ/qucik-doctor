@@ -143,3 +143,10 @@ export const deleteOrder = async (id: string) => {
   console.log('删除结果1', res);
   return res.data;
 };
+
+// 取消订单
+export const cancelOrder = async (id: string) => {
+  // 发起 put 请求
+  const res = await request.put(`/patient/order/cancel/${id}`);
+  return res.data;
+};

@@ -43,6 +43,12 @@ const onLoad = async () => {
   }
   loading.value = false;
 };
+
+// 订单删除事件回调函数
+const onDelete = (id: string) => {
+  list.value = list.value.filter((item) => item.id !== id);
+  // 或者重新获取订单列表数据，看产品要求
+};
 </script>
 
 <template>
@@ -53,7 +59,7 @@ const onLoad = async () => {
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <ConsultItem v-for="item in list" :key="item.id" :item="item" />
+      <ConsultItem v-for="item in list" :key="item.id" :item="item" @on-delete="onDelete" />
     </van-list>
   </div>
 </template>

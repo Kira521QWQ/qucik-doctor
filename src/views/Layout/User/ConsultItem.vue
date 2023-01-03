@@ -2,12 +2,17 @@
 import { ref, computed } from 'vue';
 import type { ConsultOrderItem } from '@/types/consult';
 import { OrderType } from '@/enums';
-import { deleteOrder } from '@/services/consult';
-import { Toast } from 'vant';
+import { deleteOrder, getPrescriptionPic, cancelOrder } from '@/services/consult';
+import { Toast, ImagePreview } from 'vant';
 
 // 接收类型
 const props = defineProps<{
   item: ConsultOrderItem;
+}>();
+
+// emits
+const emits = defineEmits<{
+  (e: 'on-delete', id: string): void;
 }>();
 
 // popover 显示
@@ -18,11 +23,17 @@ const actions = computed(() => {
     { text: '删除订单', disabled: false },
   ];
 });
-const onSelect = (action: { text: string; disabled?: boolean }, index: number) => {
+const onSelect = async (action: { text: string; disabled?: boolean }, index: number) => {
   console.log('点了', action, index);
   // 更多，用户点击了删除
   if (index === 1) {
     deleteConsultOrder(props.item);
+  }
+  // 更多，用户点击了查看处方
+  if (index === 0 && props.item.prescriptionId) {
+    // 请求处方图片
+    const res = await getPrescriptionPic(props.item.prescriptionId);
+    ImagePreview([res.url]);
   }
 };
 
@@ -37,6 +48,8 @@ const deleteConsultOrder = async (item: ConsultOrderItem) => {
       deleteLoading.value = true;
       const res = await deleteOrder(item.id);
       console.log('删除结果2', res);
+      // 通知父组件删除成功
+      emits('on-delete', item.id);
       Toast('删除成功');
     } catch (error) {
       console.log(error);
@@ -44,6 +57,17 @@ const deleteConsultOrder = async (item: ConsultOrderItem) => {
     } finally {
       deleteLoading.value = false;
     }
+  }
+};
+
+// 取消订单事件处理
+const loading = ref(false);
+const cancelConsultOrder = async (item: ConsultOrderItem) => {
+  // 发起请求
+  if (item.id) {
+    const res = await cancelOrder(item.id);
+    item.status = OrderType.ConsultCancel;
+    item.statusValue = '已取消';
   }
 };
 </script>
@@ -77,14 +101,18 @@ const deleteConsultOrder = async (item: ConsultOrderItem) => {
     </div>
     <!-- 待支付 -->
     <div class="foot" v-if="item.status === OrderType.ConsultPay">
-      <van-button class="gray" plain size="small" round>取消问诊</van-button>
+      <van-button class="gray" plain size="small" round @click="cancelConsultOrder(item)">
+        取消问诊
+      </van-button>
       <van-button type="primary" plain size="small" round :to="`/user/consult/${item.id}`">
         去支付
       </van-button>
     </div>
     <!-- 待接诊 -->
     <div class="foot" v-if="item.status === OrderType.ConsultWait">
-      <van-button class="gray" plain size="small" round>取消问诊</van-button>
+      <van-button class="gray" plain size="small" round @click="cancelConsultOrder(item)">
+        取消问诊
+      </van-button>
       <van-button type="primary" plain size="small" round :to="`/room/?orderId=${item.id}`">
         继续沟通
       </van-button>

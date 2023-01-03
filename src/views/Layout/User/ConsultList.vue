@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import ConsultItem from './ConsultItem.vue';
-import type { ConsultOrderListParams } from '@/types/consult';
+import type { ConsultOrderListParams, ConsultOrderItem } from '@/types/consult';
 import { getConsultOrderList } from '@/services/consult';
 
 // 接收数据的定义
@@ -15,20 +15,26 @@ const params = ref<ConsultOrderListParams>({
 });
 
 // 订单列表
-const list = ref();
+const list = ref<ConsultOrderItem[]>([]);
 
 // van-list 属性
 const loading = ref(false);
 const finished = ref(false);
 const onLoad = async () => {
   console.log('请求数据');
-  //   setTimeout(() => {
-  //     list.value = [1, 2, 3, 4, 5];
-  //     loading.value = false;
-  //   }, 2000);
   const res = await getConsultOrderList(params.value);
   console.log('订单列表数据', res);
-  list.value = res.rows;
+  list.value.push(...res.rows);
+  // 效果和上面一样
+  //   list.value = [...list.value, ...res.rows];
+  console.log('list.value', list.value);
+  // 判断列表是否还有更多数据
+  if (params.value.current < res.pageTotal) {
+    // 数据还没有请求完毕，页码增1
+    params.value.current += 1;
+  } else {
+    finished.value = true;
+  }
   loading.value = false;
 };
 </script>
@@ -41,7 +47,7 @@ const onLoad = async () => {
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <ConsultItem v-for="i in list" :key="i" />
+      <ConsultItem v-for="item in list" :key="item.id" :item="item" />
     </van-list>
   </div>
 </template>

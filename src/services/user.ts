@@ -75,3 +75,25 @@ export const getPatient = async (id: string) => {
   const res = await request.get<Patient, Data<Patient>>(`/patient/info/${id}`);
   return res.data;
 };
+
+// openid 登录，qq登录
+// qq登录
+export const loginByQQ = async (openId: string) => {
+  // 发请求
+  const res = await request.post<User, Data<User>>('/login/thirdparty', { openId, source: 'qq' });
+  return res.data;
+};
+
+// 解绑
+export const unbound = async (openId: string) => {
+  // 发请求
+  const res = await request.put('/unbound/' + openId);
+  return res.data;
+};
+
+// 绑定手机号
+export const bindMobile = async (data: { mobile: string; code: string; openId: string }) => {
+  // 发起请求
+  const res = await request.post<User, Data<User>>('/login/binding', data);
+  return res.data;
+};

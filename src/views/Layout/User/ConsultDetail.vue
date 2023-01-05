@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getConsultOrderDetail } from '@/services/consult';
+// 导入复制粘贴工具方法
+import { useClipboard } from '@vueuse/core';
 import type { ConsultOrderItem } from '@/types/consult';
 import { OrderType } from '@/enums';
+import { Toast } from 'vant';
 
 // 创建 route 实例
 const route = useRoute();
@@ -31,6 +34,20 @@ onMounted(async () => {
   console.log('订单详情', res);
   // 赋值给页面
   item.value = res;
+});
+
+// 复制功能
+const { isSupported, copy, copied, text } = useClipboard();
+const onCopy = () => {
+  if (!isSupported.value) return Toast('未授权，不支持');
+  console.log('可以复制了');
+  // 类型守卫、类型收缩判断
+  copy(item.value?.orderNo || '');
+};
+
+// 复制结果提示用户
+watch(copied, (newValue) => {
+  if (newValue) return Toast('已复制');
 });
 </script>
 
@@ -78,7 +95,7 @@ onMounted(async () => {
       <van-cell-group :border="false">
         <van-cell title="订单编号">
           <template #value>
-            <span class="copy">复制</span>
+            <span class="copy" @click="onCopy">复制</span>
             {{ item.orderNo }}
           </template>
         </van-cell>
@@ -122,7 +139,7 @@ onMounted(async () => {
       <van-button type="primary" round>{{ item.evaluateId ? '查看评价' : '写评价' }}</van-button>
     </div>
     <!-- 已取消 -->
-    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultChat">
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultCancel">
       <van-button type="default" round>删除订单</van-button>
       <van-button type="primary" round>咨询其他医生</van-button>
     </div>

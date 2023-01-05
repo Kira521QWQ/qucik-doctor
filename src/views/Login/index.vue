@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
+import { ref, onUnmounted, onMounted } from 'vue';
 // 导入路由管理和路由实例
 import { useRouter, useRoute } from 'vue-router';
 // 导入保存用户信息的store
@@ -149,6 +149,13 @@ onUnmounted(() => {
   // 清空计时器
   window.clearInterval(timerId);
 });
+
+// 生成qq登录按钮
+onMounted(() => {
+  // QC.Login({
+  //   btnId: 'qqLoginBtn',
+  // });
+});
 </script>
 
 <template>
@@ -223,7 +230,12 @@ onUnmounted(() => {
     <div class="login-other">
       <van-divider>第三方登录</van-divider>
       <div class="icon">
-        <img src="@/assets/qq.svg" alt="qq-icon" />
+        <a
+          class="icon"
+          href="https://graph.qq.com/oauth2.0/authorize?client_id=102015968&response_type=token&scope=all&redirect_uri=http%3A%2F%2Fconsult-patients.itheima.net%2Flogin%2Fcallback"
+        >
+          <img src="@/assets/qq.svg" alt="qq-icon" />
+        </a>
       </div>
     </div>
   </div>

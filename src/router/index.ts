@@ -94,6 +94,11 @@ const router = createRouter({
       meta: { title: '问诊室' },
     },
     {
+      path: '/user/consult/:id',
+      component: () => import('@/views/Layout/User/ConsultDetail.vue'),
+      meta: { title: '问诊详情' },
+    },
+    {
       path: '/test',
       component: () => import('@/views/Test/TestPage.vue'),
       meta: { title: '测试玩' },

@@ -85,7 +85,7 @@ const cancelConsultOrder = async (item: ConsultOrderItem) => {
         >{{ item.statusValue }}</span
       >
     </div>
-    <div class="body">
+    <div class="body" @click="$router.push('/user/consult/' + item.id)">
       <div class="body-row">
         <div class="body-label">病情描述</div>
         <div class="body-value">{{ item.illnessDesc }}</div>

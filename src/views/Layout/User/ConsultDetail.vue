@@ -1,43 +1,76 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getConsultOrderDetail } from '@/services/consult';
+import type { ConsultOrderItem } from '@/types/consult';
+import { OrderType } from '@/enums';
 
 // 创建 route 实例
 const route = useRoute();
+
+// 病情持续时间
+const timeMap = {
+  1: '一周内',
+  2: '一月内',
+  3: '半年内',
+  4: '大于半年',
+};
+// 病情历史
+const flagMap = {
+  1: '就诊过',
+  0: '没就诊过',
+};
+
+// 订单详情
+const item = ref<ConsultOrderItem>();
 
 // 组件加载完毕后发起请求
 onMounted(async () => {
   // 获取订单详情
   const res = await getConsultOrderDetail(route.params.id as string);
   console.log('订单详情', res);
+  // 赋值给页面
+  item.value = res;
 });
 </script>
 
 <template>
-  <div class="consult-detail">
+  <div class="consult-detail" v-if="item">
     <CpNavBar title="问诊详情" />
     <div class="detail-head">
       <div class="text">
-        <h3>图文问诊 39 元</h3>
-        <span class="sta green">待支付</span>
+        <h3>图文问诊 {{ item.payment }} 元</h3>
+        <span
+          class="sta"
+          :class="{
+            green: item.status === OrderType.ConsultChat,
+            orange: item.status === OrderType.ConsultPay,
+          }"
+          >{{ item.statusValue }}</span
+        >
         <p class="tip">服务医生信息</p>
       </div>
       <div class="card">
         <img class="avatar" src="@/assets/avatar-doctor.svg" alt="" />
         <p class="doc">
           <span>极速问诊</span>
-          <span>自动分配医生</span>
+          <span>{{ item.docInfo?.name }}</span>
         </p>
         <van-icon name="arrow" />
       </div>
     </div>
     <div class="detail-patient">
       <van-cell-group :border="false">
-        <van-cell title="患者信息" value="李富贵 | 男 | 30岁" />
-        <van-cell title="患病时长" value="一周内" />
-        <van-cell title="就诊情况" value="未就诊过" />
-        <van-cell title="病情描述" label="头痛，头晕，恶心" />
+        <van-cell
+          title="患者信息"
+          :value="`${item.patientInfo.name} | ${item.patientInfo.genderValue} | ${item.patientInfo.age}岁`"
+        />
+        <van-cell title="患病时长" :value="item.illnessTime && timeMap[item.illnessTime]" />
+        <van-cell
+          title="就诊情况"
+          :value="item.consultFlag?.toString() && flagMap[item.consultFlag]"
+        />
+        <van-cell title="病情描述" :label="item.illnessDesc" />
       </van-cell-group>
     </div>
     <div class="detail-order">
@@ -46,24 +79,30 @@ onMounted(async () => {
         <van-cell title="订单编号">
           <template #value>
             <span class="copy">复制</span>
-            202201127465
+            {{ item.orderNo }}
           </template>
         </van-cell>
-        <van-cell title="创建时间" value="2022-01-23 09:23:46" />
-        <van-cell title="应付款" value="￥39" />
-        <van-cell title="优惠券" value="-￥0" />
-        <van-cell title="积分抵扣" value="-￥0" />
-        <van-cell title="实付款" value="￥39" class="price" />
+        <van-cell title="创建时间" :value="item.createTime" />
+        <van-cell title="应付款" :value="`￥${item.payment}`" />
+        <van-cell title="优惠券" :value="`-￥${item.couponDeduction}`" />
+        <van-cell title="积分抵扣" :value="`-￥${item.pointDeduction}`" />
+        <van-cell title="实付款" :value="`￥${item.actualPayment}`" class="price" />
       </van-cell-group>
     </div>
     <div class="detail-action van-hairline--top">
       <div class="price">
         <span>需付款</span>
-        <span>￥39.00</span>
+        <span>￥{{ item.actualPayment }}</span>
       </div>
       <van-button type="default" round>取消问诊</van-button>
       <van-button type="primary" round>继续支付</van-button>
     </div>
+  </div>
+
+  <div class="consult-detail" v-else>
+    <CpNavBar title="问诊详情" />
+    <van-skeleton title :row="8" style="margin-top: 30px" />
+    <van-skeleton title :row="4" style="margin-top: 30px" />
   </div>
 </template>
 

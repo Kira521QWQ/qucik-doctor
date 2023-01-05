@@ -89,13 +89,42 @@ onMounted(async () => {
         <van-cell title="实付款" :value="`￥${item.actualPayment}`" class="price" />
       </van-cell-group>
     </div>
-    <div class="detail-action van-hairline--top">
+
+    <!-- 倒计时 -->
+    <div class="detail-time" v-if="item.status === OrderType.ConsultPay">
+      <van-count-down :time="item.countdown * 1000"></van-count-down>
+    </div>
+
+    <!-- 底部操作 -->
+    <!-- 待支付 -->
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultPay">
       <div class="price">
         <span>需付款</span>
         <span>￥{{ item.actualPayment }}</span>
       </div>
       <van-button type="default" round>取消问诊</van-button>
       <van-button type="primary" round>继续支付</van-button>
+    </div>
+    <!-- 待接诊 -->
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultWait">
+      <van-button type="default" round>取消问诊</van-button>
+      <van-button type="primary" round :to="`/room?orderId=${item.id}`">继续沟通</van-button>
+    </div>
+    <!-- 咨询中 -->
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultChat">
+      <van-button type="default" round>查看处方</van-button>
+      <van-button type="primary" round :to="`/room?orderId=${item.id}`">继续沟通</van-button>
+    </div>
+    <!-- 已完成 -->
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultComplete">
+      <div>更多/TODO</div>
+      <van-button type="primary" round :to="`/room?orderId=${item.id}`">问诊记录</van-button>
+      <van-button type="primary" round>{{ item.evaluateId ? '查看评价' : '写评价' }}</van-button>
+    </div>
+    <!-- 已取消 -->
+    <div class="detail-action van-hairline--top" v-if="item.status === OrderType.ConsultChat">
+      <van-button type="default" round>删除订单</van-button>
+      <van-button type="primary" round>咨询其他医生</van-button>
     </div>
   </div>
 
@@ -241,5 +270,23 @@ onMounted(async () => {
 .van-cell {
   padding-left: 18px;
   padding-right: 18px;
+}
+
+// 倒计时
+.detail-time {
+  position: fixed;
+  left: 0;
+  bottom: 65px;
+  width: 100%;
+  height: 44px;
+  background-color: #fff7eb;
+  text-align: center;
+  line-height: 44px;
+  font-size: 13px;
+  color: #f2994a;
+  .van-count-down {
+    display: inline;
+    color: #f2994a;
+  }
 }
 </style>

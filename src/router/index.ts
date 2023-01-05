@@ -99,6 +99,11 @@ const router = createRouter({
       meta: { title: '问诊详情' },
     },
     {
+      path: '/login/callback',
+      component: () => import('@/views/Login/LoginCallback.vue'),
+      meta: { title: 'QQ登录-绑定手机' },
+    },
+    {
       path: '/test',
       component: () => import('@/views/Test/TestPage.vue'),
       meta: { title: '测试玩' },
@@ -128,13 +133,19 @@ router.beforeEach((to) => {
   // // 除此之外，放行
   // return true;
   // 上面的代码和这个是等价的
-  if (!userStore.user?.token && to.fullPath !== '/login') {
-    // 重定向到登录页面
-    return '/login';
-  } else {
-    // 举例：有token且访问的是 /user，放行
-    return true;
-  }
+  // if (!userStore.user?.token && to.fullPath !== '/login') {
+  //   // 重定向到登录页面
+  //   return '/login';
+  // } else {
+  //   // 举例：有token且访问的是 /user，放行
+  //   return true;
+  // }
+  // 不需要登录的页面白名单
+  const wihteList = ['/login', '/login/callback'];
+  // 如果没有登录且访问的不是 /login 页面，去登录
+  if (!userStore.user?.token && !wihteList.includes(to.path)) return '/login';
+  // 否则放行。放行可以返回 true 也可以不处理
+  return true;
 });
 
 // 全局后置路由
